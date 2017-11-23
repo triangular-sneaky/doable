@@ -1,6 +1,9 @@
 FROM debian:jessie-slim
 MAINTAINER wekan
 
+# https://github.com/coreos/bugs/issues/1095
+RUN apt-get install -y bsdtar && ln -sf $(which bsdtar) $(which tar)
+
 # Declare Arguments
 ARG NODE_VERSION
 ARG METEOR_RELEASE
