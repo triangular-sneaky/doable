@@ -34,6 +34,8 @@ BlazeComponent.extendComponent({
     }
 
     const members = formComponent.members.get();
+    debugger;
+    members = setDefaultUserForCard(members);
     const labelIds = formComponent.labels.get();
 
     if (title) {
@@ -248,3 +250,17 @@ BlazeComponent.extendComponent({
     });
   },
 }).register('addCardForm');
+
+function setDefaultUserForCard(users) {
+  if (!users || !users.length) {
+    const currentUserId = Meteor.userId();
+    if (currentUserId === null) {
+      return;
+    }
+
+    if (Meteor.user().isBoardMember()) {
+      return [currentUserId];
+    }
+  }
+  return users;
+}
