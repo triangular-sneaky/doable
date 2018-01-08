@@ -44,6 +44,7 @@ BlazeComponent.extendComponent({
         listId: this.data()._id,
         boardId: this.data().board()._id,
         sort: sortIndex,
+        dueAt: formComponent.dueDate.get()
       });
       // In case the filter is active we need to add the newly inserted card in
       // the list of exceptions -- cards that are not filtered. Otherwise the
@@ -130,6 +131,7 @@ BlazeComponent.extendComponent({
   onCreated() {
     this.labels = new ReactiveVar([]);
     this.members = new ReactiveVar([]);
+    this.dueDate = new ReactiveVar(null);
   },
 
   reset() {
@@ -234,6 +236,17 @@ BlazeComponent.extendComponent({
         },
         index: 1,
       },
+
+      // Due
+      {
+        match: /\B[/](\d+(\.\d+)?)$/i,
+
+        replace(label) {
+          editor.dueDate = moment(label);
+          return '';
+        },
+        index: 1,
+      }
     ], {
       // When the autocomplete menu is shown we want both a press of both `Tab`
       // or `Enter` to validation the auto-completion. We also need to stop the
