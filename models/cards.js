@@ -201,8 +201,25 @@ Cards.helpers({
     return true;
   },
 
+  isListSeparator() {
+    return  Features.opinions.specialCards && this.title  && Features.opinions.specialCards.listSeparator.test(this.title);
+  },
+
   isSpecialCard() {
-    return  Features.opinions.specialCards && this.title  && /[-]{3}/.test(this.title);
+    return  Features.opinions.specialCards && this.title  && Features.opinions.specialCards.special.test(this.title);
+  },
+
+  decorationClasses() {
+    const decoration = Lens.decorateCard(this);
+    if (!decoration) return "";
+    var classes = [];
+    if (decoration.dimmed) classes.push("card-dimmed");
+    if (decoration.hidden) classes.push("card-hidden");
+    return classes;
+  },
+
+  listName() {
+    return (this.list() || {}).title;
   }
 });
 

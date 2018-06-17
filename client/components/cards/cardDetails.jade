@@ -46,8 +46,17 @@ template(name="cardDetails")
           h3.card-details-item-title {{_ 'card-due'}}
           +cardDueDate
 
-    .card-details-items
-      if spentTime
+      .card-details-item.card-details-item-labels
+        h3.card-details-item-title In
+        a.js-select-list
+          span.card-label(class="card-label-gray" title=listName)= listName
+        //- a.card-label.add-label.move-card.js-select-list.js-list(id="js-list-{{_id}}")
+        //-   i.fa.fa-list
+        a.card-label.add-label.move-card.js-move-card(title="Move")
+          i.fa.fa-angle-double-right
+
+    if spentTime
+      .card-details-items
         .card-details-item.card-details-item-spent
           if isOvertime
             h3.card-details-item-title {{_ 'overtime-hours'}}
