@@ -8,7 +8,7 @@ https://github.com/wekan/wekan/wiki/Install-Wekan-from-source-on-Windows
 version=1.0x-0.yy
 
 docker-compose build && \
-git tag v$version && \
+git tag v$version && git push --tags && \
 docker tag dpoz/wekan:latest dpoz/wekan:$version && \
 docker push dpoz/wekan
 ```
