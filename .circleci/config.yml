@@ -5,9 +5,12 @@ jobs:
     steps:
       # - setup_remote_docker
       - checkout
-      # - run: |
-      #   docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker-compose build
-
+      - run: |
+        version=2.$CIRCLE_BUILD_NUM-0.74
+        docker tag dpoz/wekan:latest dpoz/wekan:$version
+        docker push dpoz/wekan
 
       #https://circleci.com/docs/2.0/building-docker-images/
