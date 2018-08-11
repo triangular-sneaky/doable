@@ -22,7 +22,7 @@ BlazeComponent.extendComponent({
     const itemsSelector = '.js-minicard:not(.placeholder, .js-card-composer)';
     const $cards = this.$('.js-minicards');
     $cards.sortable({
-      connectWith: '.js-minicards:not(.js-list-full)',
+      //connectWith: '.js-minicards:not(.js-list-full)',
       tolerance: 'pointer',
       appendTo: 'body',
       helper(evt, item) {
@@ -43,7 +43,7 @@ BlazeComponent.extendComponent({
       scroll: true,
       placeholder: 'minicard-wrapper placeholder',
       start(evt, ui) {
-        ui.placeholder.height(ui.helper.height());
+        ui.placeholder.height(500);//ui.helper.height()
         EscapeActions.executeUpTo('popup-close');
         boardComponent.setIsDragging(true);
       },
