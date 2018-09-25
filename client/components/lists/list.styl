@@ -21,7 +21,7 @@ dimmedCardColod = #eaeaea
 
 .list
   box-sizing: border-box
-  display: flex
+  display: block
   flex-direction: column
   flex: 0 0 270px
   position: relative
@@ -109,9 +109,10 @@ dimmedCardColod = #eaeaea
 .list-body
   flex: 1
   flex-direction: column
-  display: flex
+  display: block
   overflow-y: auto
   padding: 5px 11px
+  height: calc(100% - 44px)
 
   .minicards
     flex-grow: 1
