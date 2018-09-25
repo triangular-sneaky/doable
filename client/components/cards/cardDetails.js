@@ -66,9 +66,6 @@ BlazeComponent.extendComponent({
 
   onRendered() {
     if (!Utils.isMiniScreen()) this.scrollParentContainer();
-    if (this.canModifyCard()) {
-      Template.editCardTitleForm.open();
-    }
   },
 
   onDestroyed() {
