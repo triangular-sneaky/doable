@@ -1,8 +1,4 @@
 BlazeComponent.extendComponent({
-  mixins() {
-    return [Mixins.PerfectScrollbar];
-  },
-
   openForm(options) {
     options = options || {};
     options.position = options.position || 'top';
@@ -170,7 +166,7 @@ BlazeComponent.extendComponent({
   },
 
   showDueDate() {
-    return moment(this.dueDate).format(Features.opinions.dates.formats.date);
+    return moment(this.dueDate.get()).format(Features.opinions.dates.formats.date);
   },
 
   pressKey(evt) {

@@ -46,29 +46,62 @@ CardAutocompletion = {
       },
       // DueDate
       {
-        match: /\B\/([\d+\.]*)$/i,
-        search(term, callback) {
-          var moments = [];
-          if (term.length > 0) {
-            const m = moment(term, Features.opinions.dates.formats.date, true);
-            if (m.isValid()) {
-              moments.push(m);
-            }
-            const justDate = moment().date(term.trim('.'));
-            const monthsOffset = moment().date() < justDate.date() ? 0 : 1;
+        match: /\B\/([\w\.]*)$/i,
+        parseTerm(term, moments) {
+          const m = moment(term, Features.opinions.dates.formats.date, true);
+          if (m.isValid()) {
+            moments.push(m);
+            return;
+          }
+          // maybe its a date
+          const date = parseInt(term);
+          if (date) {
+            const justDate = moment().date(date);
+            const monthsOffset = moment().date() <= justDate.date() ? 0 : 1;
             if (justDate.isValid()) {
               for (var i = 0; i < 2; i++) {
-                var d = justDate.clone().month(moment().month()+i + monthsOffset)
+                var d = justDate.clone().month(moment().month() + i + monthsOffset)
                 if (d != m) {
                   moments.push(d);
                 }
               }
             }
+            return;
+          }
+
+          // maybe its a day?
+          const day = moment().day(term);
+          if (day.isValid()) {
+            moments.push(day);
+            moments.push(day.clone().add(7, 'd'));
+            return;
+          }
+
+        },
+        search(term, callback) {
+          var moments = [];
+          if (term.length > 0) {
+            this.parseTerm(term, moments);
+          } else {
+            moments = [ moment(), moment().add(1, 'd'), moment().day(5), moment().day(7) ];
           }
           callback(moments);
         },
         template(date) {
-          return `<span>${date.format(Features.opinions.dates.formats.date)}&nbsp</span><span class="altName">${date.fromNow()}</span>`;
+          return `<span>${date.format(Features.opinions.dates.formats.date)}&nbsp</span><span class="altName">${date.calendar(null, {
+            sameDay: '[Today]',
+            nextDay: '[Tomorrow]',
+            nextWeek: 'dddd',
+            lastDay: '[Yesterday]',
+            lastWeek: '[Last] dddd',
+            sameElse: function() {
+              const diffDays = this.diff( moment(),"d");
+              if (this.day() == 0 && diffDays < 7) {
+                return 'dddd';
+              } else if (diffDays > 6 && diffDays < 14)  return '[Next] dddd';
+              else return 'dddd (LL)';
+            }
+          })}, ${date.endOf('day').fromNow()}</span>`;
         },
 
         replace(date) {
@@ -124,3 +157,4 @@ CardAutocompletion = {
 };
 
 Blaze.registerHelper('CardAutocompletion', CardAutocompletion);
+
