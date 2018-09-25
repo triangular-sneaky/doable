@@ -1,5 +1,7 @@
 template(name="swimlane")
-  .swimlane.js-lists
+  .swimlane.js-lists(
+    class="{{#if isMiniScreen }}mini{{/if}}"
+    class="{{#if currentList }}has-single-child{{/if}}")
     +swimlaneHeader
     if isMiniScreen
       if currentList

@@ -30,6 +30,9 @@ position()
       overflow-y: hidden
       position: cover
 
+      .mini:not(.has-single-child)
+        flex-direction: column
+
     .board-overlay
       position: cover
       top: -100px
@@ -52,7 +55,6 @@ position()
       .swimlane
         border-bottom: 1px solid #CCC
         display: flex
-        flex-direction: column
         margin: 0
         padding: 0 40px 0px 0
         overflow-x: hidden

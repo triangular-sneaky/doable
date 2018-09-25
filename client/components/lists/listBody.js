@@ -65,7 +65,7 @@ BlazeComponent.extendComponent({
 
       // We keep the form opened, empty it, and scroll to it.
       textarea.val('').focus();
-      autosize.update(textarea);
+      //autosize.update(textarea);
       if (position === 'bottom') {
         this.scrollToBottom();
       }
@@ -209,7 +209,7 @@ BlazeComponent.extendComponent({
     const editor = this;
     const $textarea = this.$('textarea');
 
-    autosize($textarea);
+    //autosize($textarea);
 
     CardAutocompletion.autocomplete($textarea, {
       user: user=> {
