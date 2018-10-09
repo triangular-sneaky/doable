@@ -143,7 +143,7 @@ CardAutocompletion = {
 
       // Link
       {
-        match: /\b(http[s]?:\/\/\S*)$/i,
+        match: /\b(http[s]?:\/\/\S*) ?$/i,
         index: 1,
         search(term, callback) {
           callback(
