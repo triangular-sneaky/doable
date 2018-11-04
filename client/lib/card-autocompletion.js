@@ -146,8 +146,12 @@ CardAutocompletion = {
         match: /\b(http[s]?:\/\/\S*)(?<!\))(?:(?<!\.) )?$/i,
         index: 1,
         search(term, callback) {
+          const text = /http[s]?:\/\/(\S*?)(\/\S*)?$/.exec(term)[1]
+            .split('.')
+            .reduce((x,y) => x.length > y.length ? x : y);
+
           callback(
-            [{md: `[ TITLE ](${term})`, title: 'Insert as link'}]
+            [{md: `[ ${text || 'TITLE'} ](${term})`, title: 'Insert as link'}]
           )
         },
         template: term => term.title,
