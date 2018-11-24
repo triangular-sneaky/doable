@@ -1,4 +1,15 @@
-# Wekan
+# Opinionated fork of Wekan
+
+Upstream repo: [wekan/wekan](https://github.com/wekan/wekan)
+
+How to pull from upstream:
+1. reset `staging/upstream-master` to `upstream-master`
+1. merge `tweaks` into `staging/upstream-master`
+    1. complicated conflicts: stash or create feature branches
+1. reset `tweaks` to `staging/upstream-master`
+
+-----------------
+# Original Wekan
 
 [![Docker Repository on Quay](https://quay.io/repository/wekan/wekan/status "Docker Repository on Quay")](https://quay.io/repository/wekan/wekan)
 
