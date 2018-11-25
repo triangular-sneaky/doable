@@ -8,7 +8,7 @@ services:
 
   wekandb:
     image: mongo:3.2.21
-    container_name: wekan-db
+    container_name: wekan-db-edge
     restart: always
     command: mongod --smallfiles --oplogSize 128
     networks:
@@ -16,12 +16,12 @@ services:
     expose:
       - 27017
     volumes:
-      - wekan-db:/data/db
-      - wekan-db-dump:/dump
+      - wekan-db-edge:/data/db
+      - wekan-db-edge-dump:/dump
 
   wekan:
-    image: quay.io/wekan/wekan
-    container_name: wekan-app
+    image: dpoz/wekan:edge
+    container_name: wekan-app-edge
     restart: always
     networks:
       - wekan-tier
@@ -38,10 +38,10 @@ services:
         - USE_EDGE=${USE_EDGE}
     ports:
       # Docker outsideport:insideport
-      - 80:8080
+      - 3080:8080
     environment:
       - MONGO_URL=mongodb://wekandb:27017/wekan
-      - ROOT_URL=http://localhost
+      - ROOT_URL=http://localhost:3080
       # Wekan Export Board works when WITH_API=true.
       # If you disable Wekan API with false, Export Board does not work.
       - WITH_API=true
@@ -214,9 +214,9 @@ services:
       - wekandb
 
 volumes:
-  wekan-db:
+  wekan-db-edge:
     driver: local
-  wekan-db-dump:
+  wekan-db-edge-dump:
     driver: local
 
 networks:

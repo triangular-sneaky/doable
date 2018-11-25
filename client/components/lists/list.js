@@ -18,7 +18,7 @@ BlazeComponent.extendComponent({
   // callback, we basically solve all issues related to reactive updates. A
   // comment below provides further details.
   onRendered() {
-    const boardComponent = this.parentComponent().parentComponent();
+    const boardComponent = Utils.getBoardComponent(this);
 
     function userIsMember() {
       return Meteor.user() && Meteor.user().isBoardMember() && !Meteor.user().isCommentOnly();
@@ -29,7 +29,7 @@ BlazeComponent.extendComponent({
     $cards.sortable({
       connectWith: '.js-minicards:not(.js-list-full)',
       tolerance: 'pointer',
-      appendTo: '.board-canvas',
+      //appendTo: 'body', -> .board-canvas (from upstream)
       helper(evt, item) {
         const helper = item.clone();
         if (MultiSelection.isActive()) {
@@ -45,6 +45,7 @@ BlazeComponent.extendComponent({
       },
       distance: 7,
       items: itemsSelector,
+      scroll: true,
       placeholder: 'minicard-wrapper placeholder',
       start(evt, ui) {
         ui.helper.css('z-index', 1000);

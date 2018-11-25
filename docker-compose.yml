@@ -20,14 +20,13 @@ services:
       - wekan-db-dump:/dump
 
   wekan:
-    image: quay.io/wekan/wekan
+    image: dpoz/wekan:edge
     container_name: wekan-app
     restart: always
     networks:
       - wekan-tier
-    ports:
-      # Docker outsideport:insideport
-      - 80:8080
+    expose:
+      - 8080
     environment:
       - MONGO_URL=mongodb://wekandb:27017/wekan
       - ROOT_URL=http://localhost
@@ -201,6 +200,24 @@ services:
 
     depends_on:
       - wekandb
+
+  sslproxy:
+    image: danieldent/nginx-ssl-proxy
+    container_name: wekan-ssl-proxy
+    restart: always
+    networks:
+      - wekan-tier
+    depends_on:
+      - wekan
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/letsencrypt"
+    environment:
+      UPSTREAM: wekan:8080
+      SERVERNAME: TYPE-HERE
+      # EXTRANAMES: www.test.example.com,test2.example.com
 
 volumes:
   wekan-db:

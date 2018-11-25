@@ -37,7 +37,6 @@
   flex-wrap: wrap
   background-color: #fff
   min-height: 20px
-  box-shadow: 0 1px 2px rgba(0,0,0,.15)
   border-radius: 2px
   color: #4d4d4d
   overflow: hidden
@@ -70,23 +69,28 @@
     background: darken(white, 7%)
 
   .minicard-cover
-    background-position: center
+    background-position: right top
     background-repeat: no-repeat
     background-size: contain
-    height: 145px
     user-select: none
-    margin: -6px -8px 6px -8px
-    border-radius: top 2px
+    margin: -6px -8px -6px -8px
+    float: right
+    width: 150px
+    height: 100px
 
   .minicard-labels
     float: right
     display: flex
 
     .minicard-label
-      width: 11px
-      height: @width
+      width: auto
+      height: auto
       border-radius: 2px
       margin-left: 3px
+      font-size: 12px
+      padding-left: 3px
+      padding-right: 3px
+      color: white
   .minicard-custom-fields
     display:block;
   .minicard-custom-field
@@ -100,9 +104,9 @@
     .viewer
       display: inline-block
   .dates
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
   .date
     margin-right: 3px
   .badges
@@ -143,12 +147,12 @@
 
   .minicard-members
     float: right
-    margin: 2px -8px -2px 0
+    margin: 2px -5px -2px 2px
 
     .member
       float: right
       border-radius: 50%
-      height: 28px
+      height: 14px
       width: @height
 
     + .badges
@@ -174,6 +178,19 @@
       margin-bottom: 20px
       overflow-y: auto
 
+.special-card
+  background-color: transparent
+  opacity: 0.6
+  padding-top: 3px
+  padding-bottom: 0px
+  padding-left: 30px
+
+  .minicard-members
+    display: none
+  .minicard-labels
+    display: none
+  .badges
+    margin-top: 0px !important
 .parent-prefix
   color: darken(white, 30%)
   font-size: 0.9em

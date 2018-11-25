@@ -96,6 +96,12 @@ Utils = {
     };
   },
 
+  getBoardComponent(component) {
+    const p = component.parentComponent();
+    const gp  = p.parentComponent();
+    if (gp) return gp;
+    return p;
+  },
   // Detect touch device
   isTouchDevice() {
     const isTouchable = (() => {

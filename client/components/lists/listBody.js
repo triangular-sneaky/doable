@@ -1,10 +1,6 @@
 const subManager = new SubsManager();
 
 BlazeComponent.extendComponent({
-  mixins() {
-    return [Mixins.PerfectScrollbar];
-  },
-
   openForm(options) {
     options = options || {};
     options.position = options.position || 'top';
@@ -35,20 +31,24 @@ BlazeComponent.extendComponent({
       sortIndex = Utils.calculateIndex(lastCardDom, null).base;
     }
 
-    const members = formComponent.members.get();
+    var members = formComponent.members.get();
+
     const labelIds = formComponent.labels.get();
     const customFields = formComponent.customFields.get();
+    const dueAt = formComponent.dueDate.get();
+
 
     const boardId = this.data().board();
     let swimlaneId = '';
     const boardView = Meteor.user().profile.boardView;
     if (boardView === 'board-view-swimlanes')
-      swimlaneId = this.parentComponent().parentComponent().data()._id;
+      swimlaneId = Utils.getBoardComponent(this).data()._id;
     else if ((boardView === 'board-view-lists') || (boardView === 'board-view-cal'))
       swimlaneId = boardId.getDefaultSwimline()._id;
 
     if (title) {
-      const _id = Cards.insert({
+
+      card = {
         title,
         members,
         labelIds,
@@ -57,10 +57,11 @@ BlazeComponent.extendComponent({
         boardId: boardId._id,
         sort: sortIndex,
         swimlaneId,
+        dueAt,
         type: 'cardType-card',
-      });
-
-
+      };
+      Lens.prepareNewCard(card);
+      const _id = Cards.insert(card);
       // In case the filter is active we need to add the newly inserted card in
       // the list of exceptions -- cards that are not filtered. Otherwise the
       // card will disappear instantly.
@@ -153,6 +154,7 @@ BlazeComponent.extendComponent({
   onCreated() {
     this.labels = new ReactiveVar([]);
     this.members = new ReactiveVar([]);
+    this.dueDate = new ReactiveVar();
     this.customFields = new ReactiveVar([]);
 
     const currentBoardId = Session.get('currentBoard');
@@ -167,14 +169,19 @@ BlazeComponent.extendComponent({
   reset() {
     this.labels.set([]);
     this.members.set([]);
+    this.dueDate.set();
     this.customFields.set([]);
   },
 
   getLabels() {
     const currentBoardId = Session.get('currentBoard');
-    return Boards.findOne(currentBoardId).labels.filter((label) => {
+    return Boards.findOne(currentBoardId).allLabels().filter((label) => {
       return this.labels.get().indexOf(label._id) > -1;
     });
+  },
+
+  showDueDate() {
+    return moment(this.dueDate.get()).format(Features.opinions.dates.formats.date);
   },
 
   pressKey(evt) {
@@ -221,65 +228,20 @@ BlazeComponent.extendComponent({
 
     autosize($textarea);
 
-    $textarea.escapeableTextComplete([
-      // User mentions
-      {
-        match: /\B@([\w.]*)$/,
-        search(term, callback) {
-          const currentBoard = Boards.findOne(Session.get('currentBoard'));
-          callback($.map(currentBoard.activeMembers(), (member) => {
-            const user = Users.findOne(member.userId);
-            return user.username.indexOf(term) === 0 ? user : null;
-          }));
-        },
-        template(user) {
-          return user.username;
-        },
-        replace(user) {
-          toggleValueInReactiveArray(editor.members, user._id);
-          return '';
-        },
-        index: 1,
+    CardAutocompletion.autocomplete($textarea, {
+      user: user=> {
+        toggleValueInReactiveArray(editor.members, user._id);
+        return '';
       },
+      label: label => {
+        toggleValueInReactiveArray(editor.labels, label._id);
+        return '';
+      },
+      date: due => {
+        editor.dueDate.set(due);
+        return '';
+      }
 
-      // Labels
-      {
-        match: /\B#(\w*)$/,
-        search(term, callback) {
-          const currentBoard = Boards.findOne(Session.get('currentBoard'));
-          callback($.map(currentBoard.labels, (label) => {
-            if (label.name.indexOf(term) > -1 ||
-                label.color.indexOf(term) > -1) {
-              return label;
-            }
-            return null;
-          }));
-        },
-        template(label) {
-          return Blaze.toHTMLWithData(Template.autocompleteLabelLine, {
-            hasNoName: !label.name,
-            colorName: label.color,
-            labelName: label.name || label.color,
-          });
-        },
-        replace(label) {
-          toggleValueInReactiveArray(editor.labels, label._id);
-          return '';
-        },
-        index: 1,
-      },
-    ], {
-      // When the autocomplete menu is shown we want both a press of both `Tab`
-      // or `Enter` to validation the auto-completion. We also need to stop the
-      // event propagation to prevent the card from submitting (on `Enter`) or
-      // going on the next column (on `Tab`).
-      onKeydown(evt, commands) {
-        if (evt.keyCode === 9 || evt.keyCode === 13) {
-          evt.stopPropagation();
-          return commands.KEY_ENTER;
-        }
-        return null;
-      },
     });
   },
 }).register('addCardForm');

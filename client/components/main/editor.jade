@@ -7,7 +7,12 @@ template(name="editor")
     +Template.contentBlock
 
 template(name="viewer")
-  .viewer
+  .viewer(class="{{class}}")
     +mentions
-      +markdown
-        {{> UI.contentBlock }}
+      +emoji
+        +markdown
+          {{> UI.contentBlock }}
+
+template(name="viewerInline")
+  +viewer(class="no-margin")
+    {{> UI.contentBlock }}

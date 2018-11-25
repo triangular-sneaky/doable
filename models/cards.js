@@ -373,6 +373,9 @@ Cards.helpers({
     return true;
   },
 
+  isListSeparator() {
+    return  Features.opinions.specialCards && this.title  && Features.opinions.specialCards.listSeparator.test(this.title);
+  },
   parentCard() {
     if (this.parentId === '') {
       return null;
@@ -437,6 +440,10 @@ Cards.helpers({
     }).join(sep);
   },
 
+  isSpecialCard() {
+    return  Features.opinions.specialCards && this.title  && Features.opinions.specialCards.special.test(this.title);
+  },
+  
   isTopLevel() {
     return this.parentId === '';
   },
@@ -453,6 +460,15 @@ Cards.helpers({
     return this.isLinkedCard() || this.isLinkedBoard();
   },
 
+  decorationClasses() {
+    const decoration = Lens.decorateCard(this);
+    if (!decoration) return "";
+    var classes = [];
+    if (decoration.dimmed) classes.push("card-dimmed");
+    if (decoration.hidden) classes.push("card-hidden");
+    return classes;
+  },
+  
   setDescription(description) {
     if (this.isLinkedCard()) {
       return Cards.update({_id: this.linkedId}, {$set: {description}});
@@ -728,6 +744,10 @@ Cards.helpers({
     }
   },
 
+  listName() {
+    return (this.list() || {}).title;
+  },
+  
   getTitle() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
@@ -907,6 +927,17 @@ Cards.mutations({
     return {
       $set: mutatedFields,
     };
+  },
+
+  moveToTop() {
+    const minOrder = _.min(this.list().cards(this.swimlaneId).map((c) => c.sort));
+    this.move(this.swimlaneId, this.listId, minOrder - 1);
+
+  },
+
+  moveToBottom() {
+    const maxOrder = _.max(this.list().cards(this.swimlaneId).map((c) => c.sort));
+    this.move(this.swimlaneId, this.listId, maxOrder + 1);
   },
 
   addLabel(labelId) {

@@ -1,5 +1,5 @@
 FROM debian:buster-slim
-LABEL maintainer="wekan"
+LABEL maintainer="dpoz"
 
 # Declare Arguments
 ARG NODE_VERSION

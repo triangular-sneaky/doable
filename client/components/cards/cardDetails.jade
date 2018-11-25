@@ -65,6 +65,15 @@ template(name="cardDetails")
           if canModifyCard
             a.js-end-date {{_ 'add'}}
 
+      .card-details-item.card-details-item-labels
+        h3.card-details-item-title In
+        a.js-select-list
+          span.card-label(class="card-label-gray" title=listName)= listName
+        //- a.card-label.add-label.move-card.js-select-list.js-list(id="js-list-{{_id}}")
+        //-   i.fa.fa-list
+        a.card-label.add-label.move-card.js-move-card(title="Move")
+          i.fa.fa-angle-double-right
+
     .card-details-items
       .card-details-item.card-details-item-members
         h3.card-details-item-title {{_ 'members'}}
@@ -79,7 +88,9 @@ template(name="cardDetails")
         h3.card-details-item-title {{_ 'labels'}}
         a(class="{{#if canModifyCard}}js-add-labels{{else}}is-disabled{{/if}}" title="{{_ 'card-labels-title'}}")
           each labels
-            span.card-label(class="card-label-{{color}}" title=name)= name
+            span.card-label(class="card-label-{{color}}" title=name)
+              +viewerInline
+                = shortName
         if canModifyCard
           a.card-label.add-label.js-add-labels(title="{{_ 'card-labels-title'}}")
             i.fa.fa-plus
@@ -168,10 +179,7 @@ template(name="cardDetails")
       +subtasks(cardId = _id)
 
     hr
-    h3
-      i.fa.fa-paperclip
-      | {{_ 'attachments'}}
-
+    h2
     +attachmentsGalery
 
     hr

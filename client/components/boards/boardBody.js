@@ -35,6 +35,17 @@ BlazeComponent.extendComponent({
     this._isDragging = false;
     // Used to set the overlay
     this.mouseHasEnterCardDetails = false;
+
+     // feature: focus on me if focus=me query param is there
+    const currentBoardId = Session.get('currentBoard');
+    Lens.init(currentBoardId);
+    if (Features.queryParamExtensions.focus) {
+      const focus = FlowRouter.current().queryParams.focus;
+      if (focus) {
+        Lens.setFocusLevel(focus);
+      }
+    }
+
   },
   onRendered() {
     const boardComponent = this;

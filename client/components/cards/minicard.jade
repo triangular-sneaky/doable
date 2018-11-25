@@ -1,13 +1,23 @@
 template(name="minicard")
   .minicard(
     class="{{#if isLinkedCard}}linked-card{{/if}}"
-    class="{{#if isLinkedBoard}}linked-board{{/if}}")
+    class="{{#if isLinkedBoard}}linked-board{{/if}}"
+    class="{{#if isSpecialCard}}special-card filter-exempt{{/if}}")
     if cover
       .minicard-cover(style="background-image: url('{{cover.url}}');")
     if labels
       .minicard-labels
         each labels
           .minicard-label(class="card-label-{{color}}" title="{{name}}")
+            span(class="{{#if archived}}card-label--archived{{/if}}")
+              +viewerInline
+                = shortName
+
+    if getMembers
+      .minicard-members.js-minicard-members
+        each getMembers
+          +userAvatar(userId=this)
+
     .minicard-title
       if $eq 'prefix-with-full-path' currentBoard.presentParentTask
         .parent-prefix
@@ -48,7 +58,6 @@ template(name="minicard")
       if getSpentTime
         .date
           +cardSpentTime
-
     .minicard-custom-fields
       each customFieldsWD
         if definition.showOnCard
@@ -59,12 +68,6 @@ template(name="minicard")
             .minicard-custom-field-item
               +viewer
                 = trueValue
-
-    if getMembers
-      .minicard-members.js-minicard-members
-        each getMembers
-          +userAvatar(userId=this)
-
     .badges
       unless currentUser.isNoComments
         if comments.count
