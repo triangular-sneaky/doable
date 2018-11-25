@@ -10,7 +10,7 @@ jobs:
           then
             docker login -u $DOCKER_USER -p $DOCKER_PASS
           fi
-      - run: docker-compose build
+      - run: docker-compose build -f docker-compose-build.yml
       - run: |
           if [ -z $CI_PULL_REQUEST ]
           then
