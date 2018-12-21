@@ -30,6 +30,7 @@ BlazeComponent.extendComponent({
       connectWith: '.js-minicards:not(.js-list-full)',
       tolerance: 'pointer',
       //appendTo: 'body', -> .board-canvas (from upstream)
+      appendTo: '.board-canvas',
       helper(evt, item) {
         const helper = item.clone();
         if (MultiSelection.isActive()) {
