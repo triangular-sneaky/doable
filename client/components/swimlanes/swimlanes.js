@@ -235,6 +235,8 @@ BlazeComponent.extendComponent({
       boardComponent.scrollLeft();
     }
 
-    initSortable(boardComponent, $listsDom);
+    if (!Features.opinions.robustUX.listsSortableOnlyInSwimlane) {
+      initSortable(boardComponent, $listsDom);
+    }
   },
 }).register('listsGroup');

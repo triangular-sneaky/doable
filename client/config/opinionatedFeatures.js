@@ -1,6 +1,9 @@
 Features = {
   opinions : {
     preferHideFilter: true,
+    robustUX: {
+      listsSortableOnlyInSwimlane: true,
+    },
     specialCards: {
       special: /[-]{3}/,
       listSeparator: /[-]{4}/
