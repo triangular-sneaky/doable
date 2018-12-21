@@ -16,7 +16,7 @@ DatePicker = BlazeComponent.extendComponent({
       language: TAPi18n.getLanguage(),
       weekStart: 1
     }).on('changeDate', function(evt) {
-      this.find('#date').value = moment(evt.date).format('L');
+      this.find('#date').value = moment(evt.date).format(Features.opinions.dates.formats.date);
       this.error.set('');
       this.find('#time').focus();
     }.bind(this));
@@ -24,30 +24,31 @@ DatePicker = BlazeComponent.extendComponent({
     if (this.date.get().isValid()) {
       $picker.datepicker('update', this.date.get().toDate());
     }
+    this.find('#date').select();
   },
 
   showDate() {
     if (this.date.get().isValid())
-      return this.date.get().format('L');
+      return this.date.get().format(Features.opinions.dates.formats.date);
     return '';
   },
   showTime() {
     if (this.date.get().isValid())
-      return this.date.get().format('LT');
+      return this.date.get().format(Features.opinions.dates.formats.time);
     return '';
   },
   dateFormat() {
-    return moment.localeData().longDateFormat('L');
+    return moment.localeData().longDateFormat(Features.opinions.dates.formats.date);
   },
   timeFormat() {
-    return moment.localeData().longDateFormat('LT');
+    return moment.localeData().longDateFormat(Features.opinions.dates.formats.time);
   },
 
   events() {
     return [{
       'keyup .js-date-field'() {
         // parse for localized date format in strict mode
-        const dateMoment = moment(this.find('#date').value, 'L', true);
+        const dateMoment = moment(this.find('#date').value, Features.opinions.dates.formats.date, true);
         if (dateMoment.isValid()) {
           this.error.set('');
           this.$('.js-datepicker').datepicker('update', dateMoment.toDate());
@@ -55,7 +56,7 @@ DatePicker = BlazeComponent.extendComponent({
       },
       'keyup .js-time-field'() {
         // parse for localized time format in strict mode
-        const dateMoment = moment(this.find('#time').value, 'LT', true);
+        const dateMoment = moment(this.find('#time').value, Features.opinions.dates.formats.time, true);
         if (dateMoment.isValid()) {
           this.error.set('');
         }
@@ -64,15 +65,18 @@ DatePicker = BlazeComponent.extendComponent({
         evt.preventDefault();
 
         // if no time was given, init with 12:00
-        const time = evt.target.time.value || moment(new Date().setHours(12, 0, 0)).format('LT');
+        const time = evt.target.time.value || moment(new Date().setHours(12, 0, 0)).format(Features.opinions.dates.formats.time);
 
         const dateString = `${evt.target.date.value} ${time}`;
-        const newDate = moment(dateString, 'L LT', true);
+        const newDate = moment(dateString, `${Features.opinions.dates.formats.date} ${Features.opinions.dates.formats.time}`, true);
         if (newDate.isValid()) {
           this._storeDate(newDate.toDate());
           Popup.close();
         }
-        else {
+        else if (evt.target.date.value === "") {
+          this._deleteDate();
+          Popup.close();
+        } else {
           this.error.set('invalid-date');
           evt.target.date.focus();
         }
