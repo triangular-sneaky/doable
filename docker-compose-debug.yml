@@ -1,0 +1,73 @@
+version: '2'
+
+# Note: Do not add single quotes '' to variables. Having spaces still works without quotes where required.
+# 1) Edit settings
+# 2) docker-compose up -d
+
+services:
+
+  wekandb:
+    image: mongo:3.2.21
+    container_name: wekan-db-debug
+    restart: always
+    command: mongod --smallfiles --oplogSize 128
+    networks:
+      - wekan-tier
+    expose:
+      - 27017
+    volumes:
+      - wekan-db-debug:/data/db
+      - wekan-db-debug-dump:/dump
+    logging:
+      driver: none
+
+  wekan:
+    image: dpoz/wekan:edge
+    container_name: wekan-app-debug
+   # restart: never
+    networks:
+      - wekan-tier
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_VERSION=${NODE_VERSION}
+        - METEOR_RELEASE=${METEOR_RELEASE}
+        - NPM_VERSION=${NPM_VERSION}
+        - ARCHITECTURE=${ARCHITECTURE}
+        - SRC_PATH=${SRC_PATH}
+        - METEOR_EDGE=${METEOR_EDGE}
+        - USE_EDGE=${USE_EDGE}
+        - NO_CLEANUP=1
+    ports:
+      # Docker outsideport:insideport
+      - 4080:3000
+    environment:
+      - MONGO_URL=mongodb://wekandb:27017/wekan
+      - ROOT_URL=http://localhost:4080
+      # - WITH_API=true
+      # - BROWSER_POLICY_ENABLED=true
+    entrypoint:
+      - /bin/bash
+      - -c
+      - cd /home/wekan/app_debug && /home/wekan/.meteor/meteor --port 0.0.0.0:3000
+      # - /home/wekan/.meteor/meteor
+      # - --port
+      # - 0.0.0.0:3000
+    # working_dir: /home/wekan/app_debug
+    volumes:
+      - ./:/home/wekan/app_debug
+    depends_on:
+     - wekandb
+    stdin_open: false
+    tty: true
+
+volumes:
+  wekan-db-debug:
+    driver: local
+  wekan-db-debug-dump:
+    driver: local
+
+networks:
+  wekan-tier:
+    driver: bridge

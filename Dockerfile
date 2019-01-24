@@ -66,10 +66,12 @@ ARG LDAP_SYNC_USER_DATA_FIELDMAP
 ARG LDAP_SYNC_GROUP_ROLES
 ARG LDAP_DEFAULT_DOMAIN
 
+ARG NO_CLEANUP
+
 # Set the environment variables (defaults where required)
 # DOES NOT WORK: paxctl fix for alpine linux: https://github.com/wekan/wekan/issues/1303
 # ENV BUILD_DEPS="paxctl"
-ENV BUILD_DEPS="apt-utils bsdtar gnupg gosu wget curl bzip2 build-essential python git ca-certificates gcc-7" \
+ENV BUILD_DEPS="apt-utils bsdtar gnupg gosu wget curl bzip2 build-essential python git ca-certificates gcc-7 procps locales" \
     NODE_VERSION=v8.12.0 \
     METEOR_RELEASE=1.6.0.1 \
     USE_EDGE=false \
@@ -257,16 +259,21 @@ RUN \
     mv /home/wekan/app_build/bundle /build && \
     \
     # Put back the original tar
-    mv $(which tar)~ $(which tar) && \
-    \
+    mv $(which tar)~ $(which tar)
+
+    # RUN echo -e 'LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8' > /etc/default/locale
+
+
     # Cleanup
-    apt-get remove --purge -y ${BUILD_DEPS} && \
-    apt-get autoremove -y && \
-    rm -R /var/lib/apt/lists/* && \
-    rm -R /home/wekan/.meteor && \
-    rm -R /home/wekan/app && \
-    rm -R /home/wekan/app_build && \
-    rm /home/wekan/install_meteor.sh
+    RUN if [ "x$NO_CLEANUP" = "x" ]; then \
+      apt-get remove --purge -y ${BUILD_DEPS} && \
+      apt-get autoremove -y && \
+      rm -R /var/lib/apt/lists/* && \
+      rm -R /home/wekan/.meteor && \
+      rm -R /home/wekan/app && \
+      rm -R /home/wekan/app_build && \
+      rm /home/wekan/install_meteor.sh; \
+    fi
 
 ENV PORT=8080
 EXPOSE $PORT
