@@ -42,7 +42,7 @@ BlazeComponent.extendComponent({
     let swimlaneId = '';
     const boardView = Meteor.user().profile.boardView;
     if (boardView === 'board-view-swimlanes')
-      swimlaneId = Utils.getBoardComponent(this).data()._id;
+      swimlaneId = Utils.getBoardBodyComponent(this).data()._id;
     else if ((boardView === 'board-view-lists') || (boardView === 'board-view-cal'))
       swimlaneId = boardId.getDefaultSwimline()._id;
 

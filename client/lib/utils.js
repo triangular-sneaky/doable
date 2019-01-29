@@ -96,11 +96,15 @@ Utils = {
     };
   },
 
-  getBoardComponent(component) {
-    const p = component.parentComponent();
-    const gp  = p.parentComponent();
-    if (gp) return gp;
-    return p;
+  // getBoardBodyComponent(component) {
+  //   const p = component.parentComponent();
+  //   const gp  = p.parentComponent();
+  //   if (gp) return gp;
+  //   return p;
+  // },
+
+  getBoardBodyComponent(component) {
+    return component.parentComponent().parentComponent()
   },
   // Detect touch device
   isTouchDevice() {

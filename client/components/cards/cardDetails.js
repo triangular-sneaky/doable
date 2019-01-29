@@ -22,7 +22,7 @@ BlazeComponent.extendComponent({
   onCreated() {
     this.currentBoard = Boards.findOne(Session.get('currentBoard'));
     this.isLoaded = new ReactiveVar(false);
-    const boardBody =  Utils.getBoardComponent(this);
+    const boardBody =  Utils.getBoardBodyComponent(this);
     //in Miniview parent is Board, not BoardBody.
     if (boardBody !== null) {
       boardBody.showOverlay.set(true);
@@ -48,7 +48,7 @@ BlazeComponent.extendComponent({
 
   scrollParentContainer() {
     const cardPanelWidth = 510;
-    const bodyBoardComponent = Utils.getBoardComponent(this);
+    const bodyBoardComponent = Utils.getBoardBodyComponent(this);
     //On Mobile View Parent is Board, Not Board Body. I cant see how this funciton should work then.
     if (bodyBoardComponent === null) return;
     const $cardView = this.$(this.firstNode());
@@ -207,7 +207,7 @@ BlazeComponent.extendComponent({
   },
 
   onDestroyed() {
-    const parentComponent =  Utils.getBoardComponent(this);
+    const parentComponent =  Utils.getBoardBodyComponent(this);
     //on mobile view parent is Board, not board body.
     if (parentComponent === null) return;
     parentComponent.showOverlay.set(false);
@@ -263,7 +263,7 @@ BlazeComponent.extendComponent({
       'click .js-due-date': Popup.open('editCardDueDate'),
       'click .js-end-date': Popup.open('editCardEndDate'),
       'mouseenter .js-card-details' () {
-        const parentComponent =  Utils.getBoardComponent(this);
+        const parentComponent =  Utils.getBoardBodyComponent(this);
         //on mobile view parent is Board, not BoardBody.
         if (parentComponent === null) return;
         parentComponent.showOverlay.set(true);
