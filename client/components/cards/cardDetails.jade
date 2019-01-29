@@ -33,48 +33,7 @@ template(name="cardDetails")
         p.warning {{_ 'card-archived'}}
 
     .card-details-items
-      .card-details-item.card-details-item-received
-        h3.card-details-item-title {{_ 'card-received'}}
-        if getReceived
-          +cardReceivedDate
-        else
-          if canModifyCard
-            a.js-received-date {{_ 'add'}}
 
-      .card-details-item.card-details-item-start
-        h3.card-details-item-title {{_ 'card-start'}}
-        if getStart
-          +cardStartDate
-        else
-          if canModifyCard
-            a.js-start-date {{_ 'add'}}
-
-      .card-details-item.card-details-item-due
-        h3.card-details-item-title {{_ 'card-due'}}
-        if getDue
-          +cardDueDate
-        else
-          if canModifyCard
-            a.js-due-date {{_ 'add'}}
-
-      .card-details-item.card-details-item-end
-        h3.card-details-item-title {{_ 'card-end'}}
-        if getEnd
-          +cardEndDate
-        else
-          if canModifyCard
-            a.js-end-date {{_ 'add'}}
-
-      .card-details-item.card-details-item-labels
-        h3.card-details-item-title In
-        a.js-select-list
-          span.card-label(class="card-label-gray" title=listName)= listName
-        //- a.card-label.add-label.move-card.js-select-list.js-list(id="js-list-{{_id}}")
-        //-   i.fa.fa-list
-        a.card-label.add-label.move-card.js-move-card(title="Move")
-          i.fa.fa-angle-double-right
-
-    .card-details-items
       .card-details-item.card-details-item-members
         h3.card-details-item-title {{_ 'members'}}
         each getMembers
@@ -94,6 +53,43 @@ template(name="cardDetails")
         if canModifyCard
           a.card-label.add-label.js-add-labels(title="{{_ 'card-labels-title'}}")
             i.fa.fa-plus
+
+
+      .card-details-item.card-details-item-labels
+        h3.card-details-item-title In
+        a.js-select-list
+          span.card-label(class="card-label-gray" title=listName)= listName
+        //- a.card-label.add-label.move-card.js-select-list.js-list(id="js-list-{{_id}}")
+        //-   i.fa.fa-list
+        a.card-label.add-label.move-card.js-move-card(title="Move")
+          i.fa.fa-angle-double-right
+
+    .card-details-items
+      if getReceived
+        .card-details-item.card-details-item-received
+          h3.card-details-item-title {{_ 'card-received'}}
+          +cardReceivedDate
+
+      .card-details-item.card-details-item-start
+        h3.card-details-item-title {{_ 'card-start'}}
+        if getStart
+          +cardStartDate
+        else
+          if canModifyCard
+            a.js-start-date {{_ 'add'}}
+
+      .card-details-item.card-details-item-due
+        h3.card-details-item-title {{_ 'card-due'}}
+        if getDue
+          +cardDueDate
+        else
+          if canModifyCard
+            a.js-due-date {{_ 'add'}}
+
+      if getEnd
+        .card-details-item.card-details-item-end
+          h3.card-details-item-title {{_ 'card-end'}}
+          +cardEndDate
 
     .card-details-items
       each customFieldsWD
@@ -138,38 +134,38 @@ template(name="cardDetails")
       +viewer
         = getDescription
 
-    .card-details-items
-      .card-details-item.card-details-item-name
-        h3.card-details-item-title {{_ 'requested-by'}}
-        if canModifyCard
-          +inlinedForm(classNames="js-card-details-requester")
-            +editCardRequesterForm
-          else
-            a.js-open-inlined-form
-              if getRequestedBy
-                +viewer
-                  = getRequestedBy
-              else
-                | {{_ 'add'}}
-        else if getRequestedBy
-          +viewer
-            = getRequestedBy
+    //- .card-details-items
+    //-   .card-details-item.card-details-item-name
+    //-     h3.card-details-item-title {{_ 'requested-by'}}
+    //-     if canModifyCard
+    //-       +inlinedForm(classNames="js-card-details-requester")
+    //-         +editCardRequesterForm
+    //-       else
+    //-         a.js-open-inlined-form
+    //-           if getRequestedBy
+    //-             +viewer
+    //-               = getRequestedBy
+    //-           else
+    //-             | {{_ 'add'}}
+    //-     else if getRequestedBy
+    //-       +viewer
+    //-         = getRequestedBy
 
-      .card-details-item.card-details-item-name
-        h3.card-details-item-title {{_ 'assigned-by'}}
-        if canModifyCard
-          +inlinedForm(classNames="js-card-details-assigner")
-            +editCardAssignerForm
-          else
-            a.js-open-inlined-form
-              if getAssignedBy
-                +viewer
-                  = getAssignedBy
-              else
-                | {{_ 'add'}}
-        else if getRequestedBy
-          +viewer
-            = getAssignedBy
+    //-   .card-details-item.card-details-item-name
+    //-     h3.card-details-item-title {{_ 'assigned-by'}}
+    //-     if canModifyCard
+    //-       +inlinedForm(classNames="js-card-details-assigner")
+    //-         +editCardAssignerForm
+    //-       else
+    //-         a.js-open-inlined-form
+    //-           if getAssignedBy
+    //-             +viewer
+    //-               = getAssignedBy
+    //-           else
+    //-             | {{_ 'add'}}
+    //-     else if getRequestedBy
+    //-       +viewer
+    //-         = getAssignedBy
 
     hr
     +checklists(cardId = _id)
