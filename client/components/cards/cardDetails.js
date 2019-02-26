@@ -430,12 +430,11 @@ Template.editCardAssignerForm.events({
 });
 
 Template.moveCardPopup.events({
-  'click .js-done' () {
+  'click .js-select-list' () {
     // XXX We should *not* get the currentCard from the global state, but
     // instead from a “component” state.
     const card = Cards.findOne(Session.get('currentCard'));
-    const lSelect = $('.js-select-lists')[0];
-    const newListId = lSelect.options[lSelect.selectedIndex].value;
+    const newListId = this._id;
     const slSelect = $('.js-select-swimlanes')[0];
     card.swimlaneId = slSelect.options[slSelect.selectedIndex].value;
     card.move(card.swimlaneId, newListId, 0);
@@ -494,12 +493,11 @@ function cloneCheckList(_id, checklist) {
 }
 
 Template.copyCardPopup.events({
-  'click .js-done'() {
+  'click .js-select-list' () {
     const card = Cards.findOne(Session.get('currentCard'));
     const oldId = card._id;
     card._id = null;
-    const lSelect = $('.js-select-lists')[0];
-    card.listId = lSelect.options[lSelect.selectedIndex].value;
+    card.listId = this._id;
     const slSelect = $('.js-select-swimlanes')[0];
     card.swimlaneId = slSelect.options[slSelect.selectedIndex].value;
     const bSelect = $('.js-select-boards')[0];
@@ -550,12 +548,11 @@ Template.copyCardPopup.events({
 });
 
 Template.copyChecklistToManyCardsPopup.events({
-  'click .js-done' () {
+  'click .js-select-list' () {
     const card = Cards.findOne(Session.get('currentCard'));
     const oldId = card._id;
     card._id = null;
-    const lSelect = $('.js-select-lists')[0];
-    card.listId = lSelect.options[lSelect.selectedIndex].value;
+    card.listId = this._id;
     const slSelect = $('.js-select-swimlanes')[0];
     card.swimlaneId = slSelect.options[slSelect.selectedIndex].value;
     const bSelect = $('.js-select-boards')[0];

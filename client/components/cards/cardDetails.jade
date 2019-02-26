@@ -267,6 +267,20 @@ template(name="copyChecklistToManyCardsPopup")
   +boardsAndLists
 
 template(name="boardsAndLists")
+  label {{_ 'lists'}}:
+  ul.pop-over-list
+    each aBoardLists
+      li
+        if $eq ../_id _id
+          a.disabled {{title}} ({{_ 'current'}})
+        else
+          a.js-select-list= title
+
+  label {{_ 'swimlanes'}}:
+  select.js-select-swimlanes
+    each swimlanes
+      option(value="{{_id}}") {{title}}
+
   label {{_ 'boards'}}:
   select.js-select-boards
     each boards
@@ -274,19 +288,6 @@ template(name="boardsAndLists")
         option(value="{{_id}}" selected) {{_ 'current'}}
       else
         option(value="{{_id}}") {{title}}
-
-  label {{_ 'swimlanes'}}:
-  select.js-select-swimlanes
-    each swimlanes
-      option(value="{{_id}}") {{title}}
-
-  label {{_ 'lists'}}:
-  select.js-select-lists
-    each aBoardLists
-      option(value="{{_id}}") {{title}}
-
-  .edit-controls.clearfix
-    button.primary.confirm.js-done {{_ 'done'}}
 
 template(name="cardMembersPopup")
   ul.pop-over-list.js-card-member-list
