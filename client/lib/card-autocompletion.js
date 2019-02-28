@@ -146,13 +146,25 @@ CardAutocompletion = {
         match: /\b(http[s]?:\/\/\S*)(?<!\))(?:(?<!\.) )?$/i,
         index: 1,
         search(term, callback) {
-          const text = /http[s]?:\/\/(\S*?)(\/\S*)?$/.exec(term)[1]
-            .split('.')
-            .reduce((x,y) => x.length > y.length ? x : y);
+          let regex = /[\/\?.&#=]([^\/\?.&#=]+)/g;
+
+          var r = [];
+          let m;
+          while ((m = regex.exec(term)) !== null) {
+            if (m.index === regex.lastIndex) {
+              regex.lastIndex++;
+            }
+            r = r.concat(m[1]);
+          }
+
+          var menu = r
+            .sort((x, y) => - x.length + y.length)
+            .slice(0, 5)
+            .map(title => ({md: `[ ${title} ](${term})`, title: `'${title}' (as link)`}));
 
           callback(
-            [{md: `[ ${text || 'TITLE'} ](${term})`, title: 'Insert as link'}]
-          )
+            menu
+          );
         },
         template: term => term.title,
         replace: term => term.md
