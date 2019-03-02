@@ -259,13 +259,13 @@ RUN \
     mv /home/wekan/app_build/bundle /build && \
     \
     # Put back the original tar
-    mv $(which tar)~ $(which tar)
+    mv $(which tar)~ $(which tar) &&\
 
     # RUN echo -e 'LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8' > /etc/default/locale
 
 
     # Cleanup
-    RUN if [ "x$NO_CLEANUP" = "x" ]; then \
+    if [ "x$NO_CLEANUP" = "x" ]; then \
       apt-get remove --purge -y ${BUILD_DEPS} && \
       apt-get autoremove -y && \
       rm -R /var/lib/apt/lists/* && \
