@@ -8,7 +8,7 @@ services:
 
   wekandb:
     image: mongo:3.2.21
-    container_name: wekan-db
+    container_name: wekan-db-edge
     restart: always
     command: mongod --smallfiles --oplogSize 128
     networks:
@@ -16,20 +16,32 @@ services:
     expose:
       - 27017
     volumes:
-      - wekan-db:/data/db
-      - wekan-db-dump:/dump
+      - wekan-db-edge:/data/db
+      - wekan-db-edge-dump:/dump
 
   wekan:
     image: dpoz/wekan:upstream-preview
-    container_name: wekan-app
+    container_name: wekan-app-edge
     restart: always
     networks:
       - wekan-tier
-    expose:
-      - 8080
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_VERSION=${NODE_VERSION}
+        - METEOR_RELEASE=${METEOR_RELEASE}
+        - NPM_VERSION=${NPM_VERSION}
+        - ARCHITECTURE=${ARCHITECTURE}
+        - SRC_PATH=${SRC_PATH}
+        - METEOR_EDGE=${METEOR_EDGE}
+        - USE_EDGE=${USE_EDGE}
+    ports:
+      # Docker outsideport:insideport
+      - 3080:8080
     environment:
       - MONGO_URL=mongodb://wekandb:27017/wekan
-      - ROOT_URL=https://localhost
+      - ROOT_URL=http://localhost:3080
       # Wekan Export Board works when WITH_API=true.
       # If you disable Wekan API with false, Export Board does not work.
       - WITH_API=true
@@ -201,28 +213,10 @@ services:
     depends_on:
       - wekandb
 
-  sslproxy:
-    image: danieldent/nginx-ssl-proxy
-    container_name: wekan-ssl-proxy
-    restart: always
-    networks:
-      - wekan-tier
-    depends_on:
-      - wekan
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
-    environment:
-      UPSTREAM: wekan:8080
-      SERVERNAME: localhost
-      # EXTRANAMES: www.test.example.com,test2.example.com
-
 volumes:
-  wekan-db:
+  wekan-db-edge:
     driver: local
-  wekan-db-dump:
+  wekan-db-edge-dump:
     driver: local
 
 networks:
