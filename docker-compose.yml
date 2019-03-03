@@ -29,7 +29,7 @@ services:
       - 8080
     environment:
       - MONGO_URL=mongodb://wekandb:27017/wekan
-      - ROOT_URL=http://localhost
+      - ROOT_URL=https://localhost
       # Wekan Export Board works when WITH_API=true.
       # If you disable Wekan API with false, Export Board does not work.
       - WITH_API=true
@@ -213,10 +213,10 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "/etc/letsencrypt"
+      - /etc/letsencrypt:/etc/letsencrypt
     environment:
       UPSTREAM: wekan:8080
-      SERVERNAME: TYPE-HERE
+      SERVERNAME: localhost
       # EXTRANAMES: www.test.example.com,test2.example.com
 
 volumes:
