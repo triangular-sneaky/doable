@@ -1,5 +1,5 @@
 const subManager = new SubsManager();
-const InfiniteScrollIter = 10;
+const InfiniteScrollIter = 1000;
 
 BlazeComponent.extendComponent({
   onCreated() {
