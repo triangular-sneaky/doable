@@ -555,6 +555,7 @@ Filter = {
     this._exceptions = [];
     this._exceptionsDep.changed();
   },
+
 };
 
 Blaze.registerHelper('Filter', Filter);

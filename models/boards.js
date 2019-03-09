@@ -119,6 +119,27 @@ Boards.attachSchema(new SimpleSchema({
     type: String,
     optional: true,
   },
+  'labels.$.shortName': {
+    type: String,
+    optional: true,
+  },
+  'labels.$.altName': {
+    type: String,
+    optional: true,
+  },
+  'labels.$.rank': {
+    type: Number,
+    optional: true,
+  },
+  'labels.$.archived': {
+    type: Boolean,
+    autoValue() { // eslint-disable-line consistent-return
+      if (!this.isSet) {
+        return false;
+      }
+    },
+    optional: true
+  },
   'labels.$.color': {
     /**
      * color of a label.
@@ -136,6 +157,8 @@ Boards.attachSchema(new SimpleSchema({
       'silver', 'peachpuff', 'crimson', 'plum', 'darkgreen',
       'slateblue', 'magenta', 'gold', 'navy', 'gray',
       'saddlebrown', 'paleturquoise', 'mistyrose', 'indigo',
+      'xd1e5e1', 'x1D1075', 'xC0D3C5', 'xFA7A55', 'x907A70',
+      'xFACADE', 'x91553D', 'x200', 'x716E25', 'x007'
     ],
   },
   // XXX We might want to maintain more informations under the member sub-
@@ -425,8 +448,9 @@ Boards.helpers({
     return Users.find({ _id: { $in: _.pluck(this.members, 'userId') } });
   },
 
-  getLabel(name, color) {
-    return _.findWhere(this.labels, { name, color });
+  getLabel(label) {
+    label.archived = label.archived || false;
+    return _.findWhere(this.labels, label);
   },
 
   getLabelById(labelId){
@@ -464,6 +488,15 @@ Boards.helpers({
   colorClass() {
     return `board-color-${this.color}`;
   },
+
+  allLabels() {
+    return _.chain(this.labels).sortBy(l => l.name).sortBy(l => l.rank || 0).value();
+  },
+
+  activeLabels() {
+    return _.filter(this.allLabels(), l => !l.archived);
+  },
+
 
   customFields() {
     return CustomFields.find({ boardId: this._id }, { sort: { name: 1 } });
@@ -690,26 +723,38 @@ Boards.mutations({
     return { $set: { permission: visibility } };
   },
 
-  addLabel(name, color) {
+  addLabel(label) {
     // If label with the same name and color already exists we don't want to
     // create another one because they would be indistinguishable in the UI
     // (they would still have different `_id` but that is not exposed to the
     // user).
-    if (!this.getLabel(name, color)) {
+    if (!this.getLabel(label)) {
       const _id = Random.id(6);
-      return { $push: { labels: { _id, name, color } } };
+      label._id = _id;
+      return { $push: { labels: label } };
     }
     return {};
   },
 
-  editLabel(labelId, name, color) {
-    if (!this.getLabel(name, color)) {
+  editLabel(labelId, label) {
+    if (!this.getLabel(label)) {
       const labelIndex = this.labelIndex(labelId);
+
+      var setObj = {};
+      Object.keys(label).forEach( field => {
+        setObj[`labels.${labelIndex}.${field}`] = label[field]
+      } );
+
       return {
-        $set: {
-          [`labels.${labelIndex}.name`]: name,
-          [`labels.${labelIndex}.color`]: color,
-        },
+        $set: setObj
+        // $set: {
+        //   [`labels.${labelIndex}.name`]: label.name,
+        //   [`labels.${labelIndex}.color`]: label.color,
+        //   [`labels.${labelIndex}.archived`]: label.archived,
+        //   [`labels.${labelIndex}.rank`]: label.rank,
+        //   [`labels.${labelIndex}.shortName`]: label.shortName,
+        //   [`labels.${labelIndex}.altName`]: label.shortName
+        // },
       };
     }
     return {};

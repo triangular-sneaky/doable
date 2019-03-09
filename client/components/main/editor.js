@@ -3,32 +3,13 @@ Template.editor.onRendered(() => {
 
   autosize($textarea);
 
-  $textarea.escapeableTextComplete([
-    // User mentions
-    {
-      match: /\B@([\w.]*)$/,
-      search(term, callback) {
-        const currentBoard = Boards.findOne(Session.get('currentBoard'));
-        callback(currentBoard.activeMembers().map((member) => {
-          const username = Users.findOne(member.userId).username;
-          return username.includes(term) ? username : null;
-        }).filter(Boolean));
-      },
-      template(value) {
-        return value;
-      },
-      replace(username) {
-        return `@${username} `;
-      },
-      index: 1,
-    },
-  ]);
+  CardAutocompletion.autocomplete($textarea);
 });
 
 import sanitizeXss from 'xss';
 
 // XXX I believe we should compute a HTML rendered field on the server that
-// would handle markdown and user mentions. We can simply have two
+// would handle markdown, emoji and user mentions. We can simply have two
 // fields, one source, and one compiled version (in HTML) and send only the
 // compiled version to most users -- who don't need to edit.
 // In the meantime, all the transformation are done on the client using the

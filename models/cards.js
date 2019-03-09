@@ -528,6 +528,9 @@ Cards.helpers({
     return true;
   },
 
+  isListSeparator() {
+    return  Features.opinions.specialCards && this.title  && Features.opinions.specialCards.listSeparator.test(this.title);
+  },
   parentCard() {
     if (this.parentId === '') {
       return null;
@@ -592,6 +595,10 @@ Cards.helpers({
     }).join(sep);
   },
 
+  isSpecialCard() {
+    return  Features.opinions.specialCards && this.title  && Features.opinions.specialCards.special.test(this.title);
+  },
+
   isTopLevel() {
     return this.parentId === '';
   },
@@ -606,6 +613,15 @@ Cards.helpers({
 
   isLinked() {
     return this.isLinkedCard() || this.isLinkedBoard();
+  },
+
+  decorationClasses() {
+    const decoration = Lens.decorateCard(this);
+    if (!decoration) return "";
+    var classes = [];
+    if (decoration.dimmed) classes.push("card-dimmed");
+    if (decoration.hidden) classes.push("card-hidden");
+    return classes;
   },
 
   setDescription(description) {
@@ -883,6 +899,10 @@ Cards.helpers({
     }
   },
 
+  listName() {
+    return (this.list() || {}).title;
+  },
+
   getTitle() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
@@ -1066,6 +1086,17 @@ Cards.mutations({
     return {
       $set: mutatedFields,
     };
+  },
+
+  moveToTop() {
+    const minOrder = _.min(this.list().cards(this.swimlaneId).map((c) => c.sort));
+    this.move(this.swimlaneId, this.listId, minOrder - 1);
+
+  },
+
+  moveToBottom() {
+    const maxOrder = _.max(this.list().cards(this.swimlaneId).map((c) => c.sort));
+    this.move(this.swimlaneId, this.listId, maxOrder + 1);
   },
 
   addLabel(labelId) {
@@ -1298,7 +1329,7 @@ function cardMove(userId, doc, fieldNames, oldListId, oldSwimlaneId) {
       listId: doc.listId,
       boardId: doc.boardId,
       cardId: doc._id,
-      swimlaneName: Swimlanes.findOne(doc.swimlaneId).title,
+      swimlaneName: (Swimlanes.findOne(doc.swimlaneId) || {}).title,
       swimlaneId: doc.swimlaneId,
       oldSwimlaneId,
     });
@@ -1409,7 +1440,7 @@ function cardCreation(userId, doc) {
     listId: doc.listId,
     cardId: doc._id,
     cardTitle:doc.title,
-    swimlaneName: Swimlanes.findOne(doc.swimlaneId).title,
+    swimlaneName: (Swimlanes.findOne(doc.swimlaneId) || {}).title,
     swimlaneId: doc.swimlaneId,
   });
 }

@@ -174,8 +174,10 @@ Lists.helpers({
     };
     if (swimlaneId)
       selector.swimlaneId = swimlaneId;
-    return Cards.find(Filter.mongoSelector(selector),
+    const cards = Cards.find(Filter.mongoSelector(selector),
       { sort: ['sort'] });
+//    cards.forEach(c => Lens.decorateCard(c))
+    return cards;
   },
 
   cardsUnfiltered(swimlaneId) {
@@ -206,6 +208,23 @@ Lists.helpers({
     } else {
       return list.wipLimit[option] ? list.wipLimit[option] : 0; // Necessary check to avoid exceptions for the case where the doc doesn't have the wipLimit field yet set
     }
+  },
+
+  getSpecialListTag() {
+    const specials = Features.opinions.specialLists;
+    if (specials) {
+      if (specials.now && specials.now.test(this.title)) return "special-list-now";
+      if (specials.done && specials.done.test(this.title)) return "special-list-done";
+    }
+  },
+
+  absoluteUrl() {
+    const board = this.board();
+    return FlowRouter.url('list', {
+      boardId: board._id,
+      slug: board.slug,
+      listId: this._id,
+    });
   },
 
   colorClass() {

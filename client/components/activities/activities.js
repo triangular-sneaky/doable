@@ -75,6 +75,7 @@ BlazeComponent.extendComponent({
   lastLabel(){
     const lastLabelId = this.currentData().labelId;
     const lastLabel = Boards.findOne(Session.get('currentBoard')).getLabelById(lastLabelId);
+    if (!lastLabel) return "#NA";
     if(lastLabel.name === undefined || lastLabel.name === ''){
       return lastLabel.color;
     }else{

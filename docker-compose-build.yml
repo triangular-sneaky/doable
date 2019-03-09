@@ -20,7 +20,7 @@ services:
       - wekan-db-edge-dump:/dump
 
   wekan:
-    image: dpoz/wekan:upstream-preview
+    image: dpoz/wekan:edge
     container_name: wekan-app-edge
     restart: always
     networks:

@@ -27,7 +27,7 @@ BlazeComponent.extendComponent({
   onCreated() {
     this.currentBoard = Boards.findOne(Session.get('currentBoard'));
     this.isLoaded = new ReactiveVar(false);
-    const boardBody =  this.parentComponent().parentComponent();
+    const boardBody =  Utils.getBoardBodyComponent(this);
     //in Miniview parent is Board, not BoardBody.
     if (boardBody !== null) {
       boardBody.showOverlay.set(true);
@@ -53,7 +53,7 @@ BlazeComponent.extendComponent({
 
   scrollParentContainer() {
     const cardPanelWidth = 510;
-    const bodyBoardComponent = this.parentComponent().parentComponent();
+    const bodyBoardComponent = Utils.getBoardBodyComponent(this);
     //On Mobile View Parent is Board, Not Board Body. I cant see how this funciton should work then.
     if (bodyBoardComponent === null) return;
     const $cardView = this.$(this.firstNode());
@@ -212,7 +212,7 @@ BlazeComponent.extendComponent({
   },
 
   onDestroyed() {
-    const parentComponent =  this.parentComponent().parentComponent();
+    const parentComponent =  Utils.getBoardBodyComponent(this);
     //on mobile view parent is Board, not board body.
     if (parentComponent === null) return;
     parentComponent.showOverlay.set(false);
@@ -268,7 +268,7 @@ BlazeComponent.extendComponent({
       'click .js-due-date': Popup.open('editCardDueDate'),
       'click .js-end-date': Popup.open('editCardEndDate'),
       'mouseenter .js-card-details' () {
-        const parentComponent =  this.parentComponent().parentComponent();
+        const parentComponent =  Utils.getBoardBodyComponent(this);
         //on mobile view parent is Board, not BoardBody.
         if (parentComponent === null) return;
         parentComponent.showOverlay.set(true);
@@ -277,6 +277,12 @@ BlazeComponent.extendComponent({
       'click #toggleButton'() {
         Meteor.call('toggleSystemMessages');
       },
+      'click .js-select-list' () {
+        const listId = this.data().listId;
+        Session.set('currentCard', null);
+        Session.set('currentList', listId);
+      },
+      'click .js-move-card': Popup.open('moveCard'),
     }];
   },
 }).register('cardDetails');
@@ -344,13 +350,11 @@ Template.cardDetailsActionsPopup.events({
   'click .js-set-card-color': Popup.open('setCardColor'),
   'click .js-move-card-to-top' (evt) {
     evt.preventDefault();
-    const minOrder = _.min(this.list().cards(this.swimlaneId).map((c) => c.sort));
-    this.move(this.swimlaneId, this.listId, minOrder - 1);
+    this.moveToTop();
   },
   'click .js-move-card-to-bottom' (evt) {
     evt.preventDefault();
-    const maxOrder = _.max(this.list().cards(this.swimlaneId).map((c) => c.sort));
-    this.move(this.swimlaneId, this.listId, maxOrder + 1);
+    this.moveToBottom();
   },
   'click .js-archive' (evt) {
     evt.preventDefault();
@@ -368,7 +372,31 @@ Template.cardDetailsActionsPopup.events({
 });
 
 Template.editCardTitleForm.onRendered(function () {
-  autosize(this.$('.js-edit-card-title'));
+  const $textarea = this.$('.js-edit-card-title');
+  autosize($textarea);
+  const card = this.data;
+  this.touchedMembers = false;
+  CardAutocompletion.autocomplete($textarea, {
+    label: label => {
+      card.toggleLabel(label._id);
+      return "";
+    },
+    user: user => {
+      if (!this.touchedMembers) {
+        if (card.members) {
+          card.members.map(m => m).forEach(m => card.unassignMember(m));
+          card.members.length = 0;
+        }
+        this.touchedMembers = true;
+      }
+      card.toggleMember(user._id);
+      return "";
+    },
+    date: due => {
+      card.setDue(due);
+      return "";
+    }
+  });
 });
 
 Template.editCardTitleForm.events({
@@ -408,12 +436,11 @@ Template.editCardAssignerForm.events({
 });
 
 Template.moveCardPopup.events({
-  'click .js-done' () {
+  'click .js-select-list' () {
     // XXX We should *not* get the currentCard from the global state, but
     // instead from a “component” state.
     const card = Cards.findOne(Session.get('currentCard'));
-    const lSelect = $('.js-select-lists')[0];
-    const newListId = lSelect.options[lSelect.selectedIndex].value;
+    const newListId = this._id;
     const slSelect = $('.js-select-swimlanes')[0];
     card.swimlaneId = slSelect.options[slSelect.selectedIndex].value;
     card.move(card.swimlaneId, newListId, 0);
@@ -457,10 +484,9 @@ BlazeComponent.extendComponent({
 }).register('boardsAndLists');
 
 Template.copyCardPopup.events({
-  'click .js-done'() {
+  'click .js-select-list' () {
     const card = Cards.findOne(Session.get('currentCard'));
-    const lSelect = $('.js-select-lists')[0];
-    listId = lSelect.options[lSelect.selectedIndex].value;
+    card.listId = this._id;
     const slSelect = $('.js-select-swimlanes')[0];
     const swimlaneId = slSelect.options[slSelect.selectedIndex].value;
     const bSelect = $('.js-select-boards')[0];
@@ -486,12 +512,11 @@ Template.copyCardPopup.events({
 });
 
 Template.copyChecklistToManyCardsPopup.events({
-  'click .js-done' () {
+  'click .js-select-list' () {
     const card = Cards.findOne(Session.get('currentCard'));
     const oldId = card._id;
     card._id = null;
-    const lSelect = $('.js-select-lists')[0];
-    card.listId = lSelect.options[lSelect.selectedIndex].value;
+    card.listId = this._id;
     const slSelect = $('.js-select-swimlanes')[0];
     card.swimlaneId = slSelect.options[slSelect.selectedIndex].value;
     const bSelect = $('.js-select-boards')[0];

@@ -217,6 +217,9 @@ export class WekanCreator {
         _id: Random.id(6),
         color: label.color,
         name: label.name,
+        shortName: label.shortName,
+        altName: label.altName,
+        archived: label.archived
       };
       // We need to remember them by Wekan ID, as this is the only ref we have
       // when importing cards.
@@ -424,7 +427,7 @@ export class WekanCreator {
     wekanLabels.forEach((label) => {
       const color = label.color;
       const name = label.name;
-      const existingLabel = board.getLabel(name, color);
+      const existingLabel = board.getLabel( { name, color });
       if (existingLabel) {
         this.labels[label.id] = existingLabel._id;
       } else {

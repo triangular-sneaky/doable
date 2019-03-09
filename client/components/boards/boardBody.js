@@ -37,6 +37,16 @@ BlazeComponent.extendComponent({
     // Used to set the overlay
     this.mouseHasEnterCardDetails = false;
 
+     // feature: focus on me if focus=me query param is there
+    const currentBoardId = Session.get('currentBoard');
+    Lens.init(currentBoardId);
+    if (Features.queryParamExtensions.focus) {
+      const focus = FlowRouter.current().queryParams.focus;
+      if (focus) {
+        Lens.setFocusLevel(focus);
+      }
+    }
+
     // fix swimlanes sort field if there are null values
     const currentBoardData = Boards.findOne(Session.get('currentBoard'));
     const nullSortSwimlanes = currentBoardData.nullSortSwimlanes();
