@@ -7,7 +7,7 @@ CardAutocompletion = {
     $textarea.escapeableTextComplete([
       // Emoji
       {
-        match: /\B:([-+\w]*)$/,
+        match: /\B:\s?([-+\w]*)$/,
         search(term, callback) {
           callback(Emoji.values.map((emoji) => {
             return emoji.includes(term) ? emoji : null;
