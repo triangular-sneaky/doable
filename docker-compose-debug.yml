@@ -22,7 +22,7 @@ services:
       driver: none
 
   wekan:
-    image: dpoz/wekan:edge
+    image: dpoz/wekan:debug
     container_name: wekan-app-debug
    # restart: never
     networks:
