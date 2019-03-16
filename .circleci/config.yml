@@ -10,10 +10,6 @@ jobs:
       - run: docker-compose -f docker-compose-build.yml build
       - run: |
           destination=edge
-          if [ -z $CI_PULL_REQUEST ]
-          then
-            destination=latest
-          fi
           version=2.$CIRCLE_BUILD_NUM-2.35-ci
           docker tag dpoz/wekan:$destination dpoz/wekan:$version
           docker push dpoz/wekan:$destination
