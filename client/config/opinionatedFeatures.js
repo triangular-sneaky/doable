@@ -28,7 +28,8 @@ Features = {
       formats: {
         date: 'D.M',
         time: 'H:mm'
-      }
+      },
+      dayStartTime: '2:00'
     }
   },
   queryParamExtensions : {
