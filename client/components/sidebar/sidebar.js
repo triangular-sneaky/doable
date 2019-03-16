@@ -57,7 +57,7 @@ BlazeComponent.extendComponent({
   },
 
   isTongueHidden() {
-    return this.isOpen() && this.getView() !== defaultView;
+    return (this.isOpen() && this.getView() !== defaultView) || (Features.opinions.robustUX.hideMobileSidebar && !this.isOpen() && Utils.isMiniScreen());
   },
 
   scrollTop() {
