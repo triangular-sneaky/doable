@@ -15,6 +15,10 @@ Template.header.helpers({
     return Utils.isMiniScreen() && Session.get('currentBoard');
   },
 
+  compactScreen() {
+    return Utils.isMiniScreen() && Features.opinions.robustUX.compactScreenInMobile;
+  },
+
   appIsOffline() {
     return !Meteor.status().connected;
   },
@@ -39,5 +43,8 @@ Template.header.events({
   'click .js-select-list'() {
     Session.set('currentList', this._id);
     Session.set('currentCard', null);
+  },
+  'click .js-open-search-view'() {
+    Sidebar.setView('search');
   },
 });

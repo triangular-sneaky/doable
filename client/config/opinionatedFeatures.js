@@ -3,6 +3,8 @@ Features = {
     preferHideFilter: true,
     robustUX: {
       listsSortableOnlyInSwimlane: true,
+      compactScreenInMobile: true,
+      hideMobileSidebar: true,
     },
     specialCards: {
       special: /[-]{3}/,

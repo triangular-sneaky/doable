@@ -10,7 +10,11 @@ template(name="header")
         ul
           li
             a(href="{{pathFor 'home'}}")
-              span.fa.fa-home
+              if currentBoard
+                if compactScreen
+                  = currentBoard.title
+              else
+                span.fa.fa-home
 
           if currentList
             each currentBoard.lists
@@ -35,25 +39,30 @@ template(name="header")
       a#header-new-board-icon.js-create-board
         i.fa.fa-plus(title="Create a new board")
 
-      +headerUserBar
+      a.board-header-btn.js-open-search-view(title="{{_ 'search'}}")
+        i.fa.fa-search
+
+      unless isMiniScreen
+        +headerUserBar
 
   #header(class=currentBoard.colorClass)
     //-
       The main bar is a colorful bar that provide all the meta-data for the
       current page. This bar is contextual based.
       If the user is not connected we display "sign in" and "log in" buttons.
-    #header-main-bar(class="{{#if wrappedHeader}}wrapper{{/if}}")
-      +Template.dynamic(template=headerBar)
+    unless compactScreen
+      #header-main-bar(class="{{#if wrappedHeader}}wrapper{{/if}}")
+        +Template.dynamic(template=headerBar)
 
-      unless hideLogo
+        unless hideLogo
 
-        //-
-          On sandstorm, the logo shouldn't be clickable, because we only have one
-          page/document on it, and we don't want to see the home page containing
-          the list of all boards.
-        unless currentSetting.hideLogo
-          a.wekan-logo(href="{{pathFor 'home'}}" title="{{_ 'header-logo-title'}}")
-            img(src="{{pathFor '/wekan-logo-header.png'}}" alt="Wekan")
+          //-
+            On sandstorm, the logo shouldn't be clickable, because we only have one
+            page/document on it, and we don't want to see the home page containing
+            the list of all boards.
+          unless currentSetting.hideLogo
+            a.wekan-logo(href="{{pathFor 'home'}}" title="{{_ 'header-logo-title'}}")
+              img(src="{{pathFor '/wekan-logo-header.png'}}" alt="Wekan")
 
   if appIsOffline
     +offlineWarning

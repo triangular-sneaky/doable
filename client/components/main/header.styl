@@ -51,41 +51,6 @@
       &.right
         float: right
 
-    .board-header-btn
-      border-radius: 3px
-      color: darken(white, 5%)
-      padding: 0
-      height: 28px
-      font-size: 13px
-      float: left
-      overflow: hidden
-      line-height: @height
-      margin: 0 2px
-
-      i.fa
-        float: left
-        display: block
-        line-height: 28px
-        color: darken(white, 5%)
-        margin: 0 10px
-
-        + span
-          display: inline-block
-          margin-top: 1px
-          margin-right: 10px
-
-      .board-header-btn-close
-        float: right
-
-        i.fa
-          margin: 0 6px
-
-    .board-header-btn,
-    h1.is-clickable
-      &.is-active,
-      &:hover:not(.is-disabled)
-        background: rgba(0, 0, 0, .15)
-
     .separator
       margin: 2px 4px
       border-left: 1px solid rgba(255, 255, 255, .3)
@@ -230,3 +195,38 @@
   p
     margin: 7px
     padding: 0
+
+.board-header-btn
+  border-radius: 3px
+  color: darken(white, 5%)
+  padding: 0
+  height: 28px
+  font-size: 13px
+  float: left
+  overflow: hidden
+  line-height: @height
+  margin: 0 2px
+
+  i.fa
+    float: left
+    display: block
+    line-height: 28px
+    color: darken(white, 5%)
+    margin: 0 10px
+
+    + span
+      display: inline-block
+      margin-top: 1px
+      margin-right: 10px
+
+  .board-header-btn-close
+    float: right
+
+    i.fa
+      margin: 0 6px
+
+.board-header-btn,
+h1.is-clickable
+  &.is-active,
+  &:hover:not(.is-disabled)
+    background: rgba(0, 0, 0, .15)
