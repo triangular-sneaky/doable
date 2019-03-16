@@ -20,8 +20,6 @@ template(name="minicard")
           +userAvatar(userId=this)
 
     .minicard-title
-      .handle
-        .fa.fa-arrows
       if $eq 'prefix-with-full-path' currentBoard.presentParentTask
         .parent-prefix
           | {{ parentString ' > ' }}
@@ -88,3 +86,4 @@ template(name="minicard")
         .badge(class="{{#if checklistFinished}}is-finished{{/if}}")
           span.badge-icon.fa.fa-check-square-o
           span.badge-text.check-list-text {{checklistFinishedCount}}/{{checklistItemCount}}
+  .handle

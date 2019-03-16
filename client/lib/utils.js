@@ -33,6 +33,11 @@ Utils = {
     return $(window).width() <= 800;
   },
 
+  isCompactMiniScreen() {
+    return this.isMiniScreen() && Features.opinions.robustUX.compactScreenInMobile
+  },
+
+
   calculateIndexData(prevData, nextData, nItems = 1) {
     let base, increment;
     // If we drop the card to an empty column
@@ -125,6 +130,10 @@ Utils = {
     })();
     Utils.isTouchDevice = () => isTouchable;
     return isTouchable;
+  },
+
+  optimizeForTouch() {
+    return window.matchMedia('(max-width: 1199px)').matches;
   },
 
   calculateTouchDistance(touchA, touchB) {

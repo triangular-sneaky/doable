@@ -30,6 +30,19 @@
   .multi-selection-checkbox + .minicard
     margin-left: 8px
 
+  .handle
+    width: 90%;
+    height: 100%;
+    position: absolute;
+    display:none;
+    @media only screen and (max-width: 1199px) {
+      width: 50%;
+      display:block;
+    }
+    .fa-arrows
+      font-size:20px;
+      color: #ccc;
+
 .minicard
   padding: 6px 8px 2px
   position: relative
@@ -98,24 +111,11 @@
   .minicard-custom-field-item
     max-width:50%;
     flex-grow:1;
-  .handle
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    display:none;
-    @media only screen and (max-width: 1199px) {
-      display:block;
-    }
-    .fa-arrows
-      font-size:20px;
-      color: #ccc;
   .minicard-title
     p:last-child
       margin-bottom: 0
     .viewer
-      display: inline-block
+      display: block
   .dates
     display: flex
     flex-direction: row

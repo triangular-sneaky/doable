@@ -27,7 +27,8 @@ template(name="listHeader")
             unless currentUser.isCommentOnly
               if canSeeAddCard
                 a.js-add-card.fa.fa-plus.list-header-plus-icon
-              a.fa.fa-navicon.js-open-list-menu
+              unless isCompactMiniScreen
+                a.fa.fa-navicon.js-open-list-menu
         else
           a.list-header-menu-icon.fa.fa-angle-right.js-select-list
       else if currentUser.isBoardMember
