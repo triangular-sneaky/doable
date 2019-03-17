@@ -14,6 +14,9 @@ FlowRouter.route('/', {
     Filter.reset();
     EscapeActions.executeAll();
 
+    Utils.manageCustomUI();
+    Utils.manageMatomo();
+
     BlazeLayout.render('defaultLayout', {
       headerBar: 'boardListHeaderBar',
       content: 'boardList',
@@ -38,12 +41,30 @@ FlowRouter.route('/b/:id/:slug', {
       EscapeActions.executeUpTo('popup-close');
     }
 
+    Utils.manageCustomUI();
+    Utils.manageMatomo();
+
     BlazeLayout.render('defaultLayout', {
       headerBar: 'boardHeaderBar',
       content: 'board',
     });
   },
 });
+
+FlowRouter.route('/b/:boardId/:slug/l/:listId', {
+  name: 'list',
+  action(params) {
+    Session.set('currentBoard', params.boardId);
+    Session.set('currentList', params.listId);
+    Session.set('currentCard', null);
+
+    BlazeLayout.render('defaultLayout', {
+      headerBar: 'boardHeaderBar',
+      content: 'board',
+    });
+  },
+});
+
 
 FlowRouter.route('/b/:boardId/:slug/:cardId', {
   name: 'card',
@@ -52,6 +73,9 @@ FlowRouter.route('/b/:boardId/:slug/:cardId', {
 
     Session.set('currentBoard', params.boardId);
     Session.set('currentCard', params.cardId);
+
+    Utils.manageCustomUI();
+    Utils.manageMatomo();
 
     BlazeLayout.render('defaultLayout', {
       headerBar: 'boardHeaderBar',
@@ -116,6 +140,7 @@ FlowRouter.route('/setting', {
     },
   ],
   action() {
+    Utils.manageCustomUI();
     BlazeLayout.render('defaultLayout', {
       headerBar: 'settingHeaderBar',
       content: 'setting',
@@ -193,20 +218,21 @@ _.each(redirections, (newPath, oldPath) => {
 // using the `kadira:dochead` package. Currently we only use it to display the
 // board title if we are in a board page (see #364) but we may want to support
 // some <meta> tags in the future.
-const appTitle = 'Wekan';
+//const appTitle = Utils.manageCustomUI();
 
 // XXX The `Meteor.startup` should not be necessary -- we don't need to wait for
 // the complete DOM to be ready to call `DocHead.setTitle`. But the problem is
 // that the global variable `Boards` is undefined when this file loads so we
 // wait a bit until hopefully all files are loaded. This will be fixed in a
 // clean way once Meteor will support ES6 modules -- hopefully in Meteor 1.3.
-Meteor.isClient && Meteor.startup(() => {
-  Tracker.autorun(() => {
-    const currentBoard = Boards.findOne(Session.get('currentBoard'));
-    const titleStack = [appTitle];
-    if (currentBoard) {
-      titleStack.push(currentBoard.title);
-    }
-    DocHead.setTitle(titleStack.reverse().join(' - '));
-  });
-});
+//Meteor.isClient && Meteor.startup(() => {
+//  Tracker.autorun(() => {
+
+//    const currentBoard = Boards.findOne(Session.get('currentBoard'));
+//    const titleStack = [appTitle];
+//    if (currentBoard) {
+//      titleStack.push(currentBoard.title);
+//    }
+//    DocHead.setTitle(titleStack.reverse().join(' - '));
+//  });
+//});

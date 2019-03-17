@@ -1,5 +1,7 @@
 template(name="listHeader")
-  .list-header.js-list-header
+  .list-header.js-list-header(
+    class="{{#if limitToShowCardsCount}}list-header-card-count{{/if}}"
+    class="{{#if colorClass}}list-header-{{colorClass}}{{/if}}")
     +inlinedForm
       +editListTitleForm
     else
@@ -15,9 +17,8 @@ template(name="listHeader")
          |/#{wipLimit.value})
 
         if showCardsCountForList cards.count
-          = cards.count
-          span.lowercase
-            |  {{_ 'cards'}}
+          |&nbsp;
+          p.quiet.small {{cardsCount}} {{_ 'cards-count'}}
       if isMiniScreen
         if currentList
           if isWatching
@@ -26,7 +27,8 @@ template(name="listHeader")
             unless currentUser.isCommentOnly
               if canSeeAddCard
                 a.js-add-card.fa.fa-plus.list-header-plus-icon
-              a.fa.fa-navicon.js-open-list-menu
+              unless isCompactMiniScreen
+                a.fa.fa-navicon.js-open-list-menu
         else
           a.list-header-menu-icon.fa.fa-angle-right.js-select-list
       else if currentUser.isBoardMember
@@ -49,6 +51,9 @@ template(name="listActionPopup")
   ul.pop-over-list
     li: a.js-toggle-watch-list {{#if isWatching}}{{_ 'unwatch'}}{{else}}{{_ 'watch'}}{{/if}}
   unless currentUser.isCommentOnly
+    hr
+    ul.pop-over-list
+      li: a.js-set-color-list {{_ 'set-color-list'}}
     hr
     ul.pop-over-list
       if cards.count
@@ -79,7 +84,7 @@ template(name="listMorePopup")
       span {{_ 'link-list'}}
       = ' '
       i.fa.colorful(class="{{#if board.isPublic}}fa-globe{{else}}fa-lock{{/if}}")
-      input.inline-input(type="text" readonly value="{{ rootUrl }}")
+      input.inline-input(type="text" readonly value="{{ absoluteUrl }}")
     | {{_ 'added'}}
     span.date(title=list.createdAt) {{ moment createdAt 'LLL' }}
     a.js-delete {{_ 'delete'}}
@@ -112,3 +117,13 @@ template(name="wipLimitErrorPopup")
     p {{_ 'wipLimitErrorPopup-dialog-pt1'}}
     p {{_ 'wipLimitErrorPopup-dialog-pt2'}}
     button.full.js-back-view(type="submit") {{_ 'cancel'}}
+
+template(name="setListColorPopup")
+  form.edit-label
+    .palette-colors: each colors
+      // note: we use the swimlane palette to have more than just the border
+      span.card-label.palette-color.js-palette-color(class="swimlane-{{color}}")
+        if(isSelected color)
+          i.fa.fa-check
+    button.primary.confirm.js-submit {{_ 'save'}}
+    button.js-remove-color.negate.wide.right {{_ 'unset-color'}}

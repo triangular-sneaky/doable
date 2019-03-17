@@ -3,13 +3,21 @@ Template.headerUserBar.events({
   'click .js-change-avatar': Popup.open('changeAvatar'),
 });
 
+Template.memberMenuPopup.helpers({
+  templatesBoardId() {
+    return Meteor.user().getTemplatesBoardId();
+  },
+  templatesBoardSlug() {
+    return Meteor.user().getTemplatesBoardSlug();
+  },
+});
+
 Template.memberMenuPopup.events({
   'click .js-edit-profile': Popup.open('editProfile'),
   'click .js-change-settings': Popup.open('changeSettings'),
   'click .js-change-avatar': Popup.open('changeAvatar'),
   'click .js-change-password': Popup.open('changePassword'),
   'click .js-change-language': Popup.open('changeLanguage'),
-  'click .js-edit-notification': Popup.open('editNotification'),
   'click .js-logout'(evt) {
     evt.preventDefault();
 
@@ -23,6 +31,9 @@ Template.memberMenuPopup.events({
 Template.editProfilePopup.helpers({
   allowEmailChange() {
     return AccountSettings.findOne('accounts-allowEmailChange').booleanValue;
+  },
+  allowUserNameChange() {
+    return AccountSettings.findOne('accounts-allowUserNameChange').booleanValue;
   },
 });
 
@@ -86,25 +97,6 @@ Template.editProfilePopup.events({
   },
 });
 
-Template.editNotificationPopup.helpers({
-  hasTag(tag) {
-    const user = Meteor.user();
-    return user && user.hasTag(tag);
-  },
-});
-
-// we defined github like rules, see: https://github.com/settings/notifications
-Template.editNotificationPopup.events({
-  'click .js-toggle-tag-notify-participate'() {
-    const user = Meteor.user();
-    if (user) user.toggleTag('notify-participate');
-  },
-  'click .js-toggle-tag-notify-watch'() {
-    const user = Meteor.user();
-    if (user) user.toggleTag('notify-watch');
-  },
-});
-
 // XXX For some reason the useraccounts autofocus isnt working in this case.
 // See https://github.com/meteor-useraccounts/core/issues/384
 Template.changePasswordPopup.onRendered(function () {
@@ -114,10 +106,16 @@ Template.changePasswordPopup.onRendered(function () {
 Template.changeLanguagePopup.helpers({
   languages() {
     return _.map(TAPi18n.getLanguages(), (lang, code) => {
-      return {
-        tag: code,
-        name: lang.name === 'br' ? 'Brezhoneg' : lang.name,
-      };
+      // Same code in /client/components/main/layouts.js
+      // TODO : Make code reusable
+      const tag = code;
+      let name = lang.name;
+      if (lang.name === 'br') {
+        name = 'Brezhoneg';
+      } else if (lang.name === 'ig') {
+        name = 'Igbo';
+      }
+      return { tag, name };
     }).sort(function (a, b) {
       if (a.name === b.name) {
         return 0;

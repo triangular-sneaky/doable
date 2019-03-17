@@ -3,7 +3,7 @@
 global-reset()
 
 html, body, input, select, textarea, button
-  font: 14px Roboto, "Helvetica Neue", Arial, Helvetica, sans-serif
+  font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
   line-height: 18px
   color: #4d4d4d
 
@@ -48,6 +48,23 @@ body
   .modal-content
     width: 500px
     min-height: 160px
+    margin: 42px auto
+    padding: 12px
+    border-radius: 4px
+    background: darken(white, 13%)
+    z-index: 110
+
+    h2
+      margin-bottom: 25px
+
+    .modal-close-btn
+      display: block
+      float: right
+      font-size: 24px
+  
+  .modal-content-wide
+    width: 800px
+    min-height: 0px
     margin: 42px auto
     padding: 12px
     border-radius: 4px
@@ -136,6 +153,7 @@ code,
 tt
   font-family: lucida console, monospace
   line-height: 1.25em
+  font-size: 90%
 
 blockquote
   margin: 8px 0 8px 8px
@@ -373,8 +391,8 @@ a
 
 @media screen and (max-width: 800px)
   #content
-    margin: 1px 0px 49px 0px
-    height: calc(100% - 96px)
+    margin: 1px 0px 0px 0px
+    height: calc(100% - 0px)
 
     > .wrapper
       margin-top: 0px
@@ -387,3 +405,24 @@ a
   height: 37px
   margin: 8px 10px 0 0
   width: 50px
+
+.no-margin
+  p
+    margin: 0px !important
+
+.altName
+  color: light(gray)
+  opacity: 0.6
+
+::-webkit-scrollbar
+  height: 5px
+  width: 5px
+  background: #dedede
+
+::-webkit-scrollbar-thumb
+  background: #c8c8c8
+  border-radius: 1ex
+  -webkit-border-radius: 1ex
+
+::-webkit-scrollbar-corner
+  background: #000

@@ -1,19 +1,34 @@
 CardComments = new Mongo.Collection('card_comments');
 
+/**
+ * A comment on a card
+ */
 CardComments.attachSchema(new SimpleSchema({
   boardId: {
+    /**
+     * the board ID
+     */
     type: String,
   },
   cardId: {
+    /**
+     * the card ID
+     */
     type: String,
   },
   // XXX Rename in `content`? `text` is a bit vague...
   text: {
+    /**
+     * the text of the comment
+     */
     type: String,
   },
   // XXX We probably don't need this information here, since we already have it
   // in the associated comment creation activity
   createdAt: {
+    /**
+     * when was the comment created
+     */
     type: Date,
     denyUpdate: false,
     autoValue() { // eslint-disable-line consistent-return
@@ -26,6 +41,9 @@ CardComments.attachSchema(new SimpleSchema({
   },
   // XXX Should probably be called `authorId`
   userId: {
+    /**
+     * the author ID of the comment
+     */
     type: String,
     autoValue() { // eslint-disable-line consistent-return
       if (this.isInsert && !this.isSet) {
@@ -49,6 +67,12 @@ CardComments.allow({
 });
 
 CardComments.helpers({
+  copy(newCardId) {
+    this.cardId = newCardId;
+    delete this._id;
+    CardComments.insert(this);
+  },
+
   user() {
     return Users.findOne(this.userId);
   },
@@ -87,7 +111,17 @@ if (Meteor.isServer) {
 
 //CARD COMMENT REST API
 if (Meteor.isServer) {
-  JsonRoutes.add('GET', '/api/boards/:boardId/cards/:cardId/comments', function (req, res, next) {
+  /**
+   * @operation get_all_comments
+   * @summary Get all comments attached to a card
+   *
+   * @param {string} boardId the board ID of the card
+   * @param {string} cardId the ID of the card
+   * @return_type [{_id: string,
+   *                comment: string,
+   *                authorId: string}]
+   */
+  JsonRoutes.add('GET', '/api/boards/:boardId/cards/:cardId/comments', function (req, res) {
     try {
       Authentication.checkUserId( req.userId);
       const paramBoardId = req.params.boardId;
@@ -111,7 +145,16 @@ if (Meteor.isServer) {
     }
   });
 
-  JsonRoutes.add('GET', '/api/boards/:boardId/cards/:cardId/comments/:commentId', function (req, res, next) {
+  /**
+   * @operation get_comment
+   * @summary Get a comment on a card
+   *
+   * @param {string} boardId the board ID of the card
+   * @param {string} cardId the ID of the card
+   * @param {string} commentId the ID of the comment to retrieve
+   * @return_type CardComments
+   */
+  JsonRoutes.add('GET', '/api/boards/:boardId/cards/:cardId/comments/:commentId', function (req, res) {
     try {
       Authentication.checkUserId( req.userId);
       const paramBoardId = req.params.boardId;
@@ -130,7 +173,17 @@ if (Meteor.isServer) {
     }
   });
 
-  JsonRoutes.add('POST', '/api/boards/:boardId/cards/:cardId/comments', function (req, res, next) {
+  /**
+   * @operation new_comment
+   * @summary Add a comment on a card
+   *
+   * @param {string} boardId the board ID of the card
+   * @param {string} cardId the ID of the card
+   * @param {string} authorId the user who 'posted' the comment
+   * @param {string} text the content of the comment
+   * @return_type {_id: string}
+   */
+  JsonRoutes.add('POST', '/api/boards/:boardId/cards/:cardId/comments', function (req, res) {
     try {
       Authentication.checkUserId( req.userId);
       const paramBoardId = req.params.boardId;
@@ -160,7 +213,16 @@ if (Meteor.isServer) {
     }
   });
 
-  JsonRoutes.add('DELETE', '/api/boards/:boardId/cards/:cardId/comments/:commentId', function (req, res, next) {
+  /**
+   * @operation delete_comment
+   * @summary Delete a comment on a card
+   *
+   * @param {string} boardId the board ID of the card
+   * @param {string} cardId the ID of the card
+   * @param {string} commentId the ID of the comment to delete
+   * @return_type {_id: string}
+   */
+  JsonRoutes.add('DELETE', '/api/boards/:boardId/cards/:cardId/comments/:commentId', function (req, res) {
     try {
       Authentication.checkUserId( req.userId);
       const paramBoardId = req.params.boardId;

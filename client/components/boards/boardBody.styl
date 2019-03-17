@@ -1,8 +1,11 @@
 @import 'nib'
 
 position()
-  if arguments[0] == cover
-    position: absolute
+  if arguments[0] == cover || arguments[0] == fixed-cover
+    if arguments[0] == cover
+      position: absolute
+    else
+      position: fixed
     left: 0
     right: 0
     top: 0
@@ -12,26 +15,19 @@ position()
 
 .board-wrapper
   position: cover
+  overflow-x: hidden
+  overflow-y: hidden
 
   .board-canvas
     position: cover
     transition: margin .1s
+    overflow-y: auto
 
     &.is-sibling-sidebar-open
       margin-right: 248px
 
-    .lists
-      align-items: flex-start
-      display: flex
-      flex-direction: row
-      margin: 0 0 10px
-      padding: 0 40px 5px 0
-      overflow-x: auto
-      overflow-y: hidden
-      position: cover
-
     .board-overlay
-      position: cover
+      position: fixed-cover
       top: -100px
       right: -400px
       background: black
@@ -49,12 +45,11 @@ position()
 
     .board-canvas
 
-      .lists
-        align-items: flex-start
+      .swimlane
+        border-bottom: 1px solid #CCC
         display: flex
         flex-direction: column
         margin: 0
-        padding: 0 40px 0px 0
+        padding: 0 10px 0px 0
         overflow-x: hidden
         overflow-y: auto
-        position: cover

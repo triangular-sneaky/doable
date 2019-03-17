@@ -3,45 +3,7 @@ Template.editor.onRendered(() => {
 
   autosize($textarea);
 
-  $textarea.escapeableTextComplete([
-    // Emoji
-    {
-      match: /\B:([-+\w]*)$/,
-      search(term, callback) {
-        callback(Emoji.values.map((emoji) => {
-          return emoji.includes(term) ? emoji : null;
-        }).filter(Boolean));
-      },
-      template(value) {
-        const imgSrc = Emoji.baseImagePath + value;
-        const image = `<img src="${imgSrc}.png" />`;
-        return image + value;
-      },
-      replace(value) {
-        return `:${value}:`;
-      },
-      index: 1,
-    },
-
-    // User mentions
-    {
-      match: /\B@([\w.]*)$/,
-      search(term, callback) {
-        const currentBoard = Boards.findOne(Session.get('currentBoard'));
-        callback(currentBoard.activeMembers().map((member) => {
-          const username = Users.findOne(member.userId).username;
-          return username.includes(term) ? username : null;
-        }).filter(Boolean));
-      },
-      template(value) {
-        return value;
-      },
-      replace(username) {
-        return `@${username} `;
-      },
-      index: 1,
-    },
-  ]);
+  CardAutocompletion.autocomplete($textarea);
 });
 
 import sanitizeXss from 'xss';
@@ -55,13 +17,18 @@ import sanitizeXss from 'xss';
 const at = HTML.CharRef({html: '&commat;', str: '@'});
 Blaze.Template.registerHelper('mentions', new Template('mentions', function() {
   const view = this;
+  let content = Blaze.toHTML(view.templateContentBlock);
   const currentBoard = Boards.findOne(Session.get('currentBoard'));
+  if (!currentBoard)
+    return HTML.Raw(sanitizeXss(content));
   const knowedUsers = currentBoard.members.map((member) => {
-    member.username = Users.findOne(member.userId).username;
+    const u = Users.findOne(member.userId);
+    if(u){
+      member.username = u.username;
+    }
     return member;
   });
   const mentionRegex = /\B@([\w.]*)/gi;
-  let content = Blaze.toHTML(view.templateContentBlock);
 
   let currentMention;
   while ((currentMention = mentionRegex.exec(content)) !== null) {

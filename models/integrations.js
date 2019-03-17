@@ -1,33 +1,60 @@
 Integrations = new Mongo.Collection('integrations');
 
+/**
+ * Integration with third-party applications
+ */
 Integrations.attachSchema(new SimpleSchema({
   enabled: {
+    /**
+     * is the integration enabled?
+     */
     type: Boolean,
     defaultValue: true,
   },
   title: {
+    /**
+     * name of the integration
+     */
     type: String,
     optional: true,
   },
   type: {
+    /**
+     * type of the integratation (Default to 'outgoing-webhooks')
+     */
     type: String,
     defaultValue: 'outgoing-webhooks',
   },
   activities: {
+    /**
+     * activities the integration gets triggered (list)
+     */
     type: [String],
     defaultValue: ['all'],
   },
   url: { // URL validation regex (https://mathiasbynens.be/demo/url-regex)
+    /**
+     * URL validation regex (https://mathiasbynens.be/demo/url-regex)
+     */
     type: String,
   },
   token: {
+    /**
+     * token of the integration
+     */
     type: String,
     optional: true,
   },
   boardId: {
+    /**
+     * Board ID of the integration
+     */
     type: String,
   },
   createdAt: {
+    /**
+     * Creation date of the integration
+     */
     type: Date,
     denyUpdate: false,
     autoValue() { // eslint-disable-line consistent-return
@@ -39,6 +66,9 @@ Integrations.attachSchema(new SimpleSchema({
     },
   },
   userId: {
+    /**
+     * user ID who created the interation
+     */
     type: String,
   },
 }));
@@ -58,8 +88,18 @@ Integrations.allow({
 
 //INTEGRATIONS REST API
 if (Meteor.isServer) {
-  // Get all integrations in board
-  JsonRoutes.add('GET', '/api/boards/:boardId/integrations', function(req, res, next) {
+  Meteor.startup(() => {
+    Integrations._collection._ensureIndex({ boardId: 1 });
+  });
+
+  /**
+   * @operation get_all_integrations
+   * @summary Get all integrations in board
+   *
+   * @param {string} boardId the board ID
+   * @return_type [Integrations]
+   */
+  JsonRoutes.add('GET', '/api/boards/:boardId/integrations', function(req, res) {
     try {
       const paramBoardId = req.params.boardId;
       Authentication.checkBoardAccess(req.userId, paramBoardId);
@@ -78,8 +118,15 @@ if (Meteor.isServer) {
     }
   });
 
-  // Get a single integration in board
-  JsonRoutes.add('GET', '/api/boards/:boardId/integrations/:intId', function(req, res, next) {
+  /**
+   * @operation get_integration
+   * @summary Get a single integration in board
+   *
+   * @param {string} boardId the board ID
+   * @param {string} intId the integration ID
+   * @return_type Integrations
+   */
+  JsonRoutes.add('GET', '/api/boards/:boardId/integrations/:intId', function(req, res) {
     try {
       const paramBoardId = req.params.boardId;
       const paramIntId = req.params.intId;
@@ -98,8 +145,15 @@ if (Meteor.isServer) {
     }
   });
 
-  // Create a new integration
-  JsonRoutes.add('POST', '/api/boards/:boardId/integrations', function(req, res, next) {
+  /**
+   * @operation new_integration
+   * @summary Create a new integration
+   *
+   * @param {string} boardId the board ID
+   * @param {string} url the URL of the integration
+   * @return_type {_id: string}
+   */
+  JsonRoutes.add('POST', '/api/boards/:boardId/integrations', function(req, res) {
     try {
       const paramBoardId = req.params.boardId;
       Authentication.checkBoardAccess(req.userId, paramBoardId);
@@ -125,8 +179,20 @@ if (Meteor.isServer) {
     }
   });
 
-  // Edit integration data
-  JsonRoutes.add('PUT', '/api/boards/:boardId/integrations/:intId', function (req, res, next) {
+  /**
+   * @operation edit_integration
+   * @summary Edit integration data
+   *
+   * @param {string} boardId the board ID
+   * @param {string} intId the integration ID
+   * @param {string} [enabled] is the integration enabled?
+   * @param {string} [title] new name of the integration
+   * @param {string} [url] new URL of the integration
+   * @param {string} [token] new token of the integration
+   * @param {string} [activities] new list of activities of the integration
+   * @return_type {_id: string}
+   */
+  JsonRoutes.add('PUT', '/api/boards/:boardId/integrations/:intId', function (req, res) {
     try {
       const paramBoardId = req.params.boardId;
       const paramIntId = req.params.intId;
@@ -173,8 +239,16 @@ if (Meteor.isServer) {
     }
   });
 
-  // Delete subscribed activities
-  JsonRoutes.add('DELETE', '/api/boards/:boardId/integrations/:intId/activities', function (req, res, next) {
+  /**
+   * @operation delete_integration_activities
+   * @summary Delete subscribed activities
+   *
+   * @param {string} boardId the board ID
+   * @param {string} intId the integration ID
+   * @param {string} newActivities the activities to remove from the integration
+   * @return_type Integrations
+   */
+  JsonRoutes.add('DELETE', '/api/boards/:boardId/integrations/:intId/activities', function (req, res) {
     try {
       const paramBoardId = req.params.boardId;
       const paramIntId = req.params.intId;
@@ -197,8 +271,16 @@ if (Meteor.isServer) {
     }
   });
 
-  // Add subscribed activities
-  JsonRoutes.add('POST', '/api/boards/:boardId/integrations/:intId/activities', function (req, res, next) {
+  /**
+   * @operation new_integration_activities
+   * @summary Add subscribed activities
+   *
+   * @param {string} boardId the board ID
+   * @param {string} intId the integration ID
+   * @param {string} newActivities the activities to add to the integration
+   * @return_type Integrations
+   */
+  JsonRoutes.add('POST', '/api/boards/:boardId/integrations/:intId/activities', function (req, res) {
     try {
       const paramBoardId = req.params.boardId;
       const paramIntId = req.params.intId;
@@ -221,8 +303,15 @@ if (Meteor.isServer) {
     }
   });
 
-  // Delete integration
-  JsonRoutes.add('DELETE', '/api/boards/:boardId/integrations/:intId', function (req, res, next) {
+  /**
+   * @operation delete_integration
+   * @summary Delete integration
+   *
+   * @param {string} boardId the board ID
+   * @param {string} intId the integration ID
+   * @return_type {_id: string}
+   */
+  JsonRoutes.add('DELETE', '/api/boards/:boardId/integrations/:intId', function (req, res) {
     try {
       const paramBoardId = req.params.boardId;
       const paramIntId = req.params.intId;

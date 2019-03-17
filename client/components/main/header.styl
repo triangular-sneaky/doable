@@ -4,6 +4,7 @@
   color: white
   transition: background-color 0.4s
   background: #2980B9
+  z-index: 17
 
   #header-main-bar
     height: 40px
@@ -28,13 +29,12 @@
         font-size: 0.9em
         margin-right: 10px
 
-
     .wekan-logo
-      display: block
-      margin: 3px auto 0
+      margin: 3px auto auto
       width: 97px
       opacity: 0.6
       transition: opacity 0.15s
+      float: right
 
       &:hover
         opacity: 0.9
@@ -51,41 +51,6 @@
       &.right
         float: right
 
-    .board-header-btn
-      border-radius: 3px
-      color: darken(white, 5%)
-      padding: 0
-      height: 28px
-      font-size: 13px
-      float: left
-      overflow: hidden
-      line-height: @height
-      margin: 0 2px
-
-      i.fa
-        float: left
-        display: block
-        line-height: 28px
-        color: darken(white, 5%)
-        margin: 0 10px
-
-        + span
-          display: inline-block
-          margin-top: 1px
-          margin-right: 10px
-
-      .board-header-btn-close
-        float: right
-
-        i.fa
-          margin: 0 6px
-
-    .board-header-btn,
-    h1.is-clickable
-      &.is-active,
-      &:hover:not(.is-disabled)
-        background: rgba(0, 0, 0, .15)
-
     .separator
       margin: 2px 4px
       border-left: 1px solid rgba(255, 255, 255, .3)
@@ -99,6 +64,7 @@
   height: 28px
   font-size: 12px
   display: flex
+  z-index: 17
 
   #header-user-bar,
   #header-new-board-icon,
@@ -187,8 +153,6 @@
     width: 100%
     padding: 10px 0px
     z-index: 30
-    position: absolute
-    bottom: 0px
 
     ul
       width: calc(100% - 60px)
@@ -217,7 +181,7 @@
       position: absolute
       right: 0px
       padding: 10px
-      margin: -10px
+      margin: -10px 0 -10px -10px
 
 .announcement,
 .offline-warning
@@ -231,3 +195,38 @@
   p
     margin: 7px
     padding: 0
+
+.board-header-btn
+  border-radius: 3px
+  color: darken(white, 5%)
+  padding: 0
+  height: 28px
+  font-size: 13px
+  float: left
+  overflow: hidden
+  line-height: @height
+  margin: 0 2px
+
+  i.fa
+    float: left
+    display: block
+    line-height: 28px
+    color: darken(white, 5%)
+    margin: 0 10px
+
+    + span
+      display: inline-block
+      margin-top: 1px
+      margin-right: 10px
+
+  .board-header-btn-close
+    float: right
+
+    i.fa
+      margin: 0 6px
+
+.board-header-btn,
+h1.is-clickable
+  &.is-active,
+  &:hover:not(.is-disabled)
+    background: rgba(0, 0, 0, .15)

@@ -6,7 +6,35 @@ const i18nTagToT9n = (i18nTag) => {
   return i18nTag;
 };
 
+const validator = {
+  set(obj, prop, value) {
+    if (prop === 'state' && value !== 'signIn') {
+      $('.at-form-authentication').hide();
+    } else if (prop === 'state' && value === 'signIn') {
+      $('.at-form-authentication').show();
+    }
+    // The default behavior to store the value
+    obj[prop] = value;
+    // Indicate success
+    return true;
+  },
+};
+
+Template.userFormsLayout.onCreated(function() {
+  const instance = this;
+  instance.currentSetting = new ReactiveVar();
+
+  Meteor.subscribe('setting', {
+    onReady() {
+      instance.currentSetting.set(Settings.findOne());
+      return this.stop();
+    },
+  });
+});
+
 Template.userFormsLayout.onRendered(() => {
+  AccountsTemplates.state.form.keys = new Proxy(AccountsTemplates.state.form.keys, validator);
+
   const i18nTag = navigator.language;
   if (i18nTag) {
     T9n.setLanguage(i18nTagToT9n(i18nTag));
@@ -15,12 +43,28 @@ Template.userFormsLayout.onRendered(() => {
 });
 
 Template.userFormsLayout.helpers({
+  currentSetting() {
+    return Template.instance().currentSetting.get();
+  },
+
+  afterBodyStart() {
+    return currentSetting.customHTMLafterBodyStart;
+  },
+
+  beforeBodyEnd() {
+    return currentSetting.customHTMLbeforeBodyEnd;
+  },
+
   languages() {
     return _.map(TAPi18n.getLanguages(), (lang, code) => {
-      return {
-        tag: code,
-        name: lang.name === 'br' ? 'Brezhoneg' : lang.name,
-      };
+      const tag = code;
+      let name = lang.name;
+      if (lang.name === 'br') {
+        name = 'Brezhoneg';
+      } else if (lang.name === 'ig') {
+        name = 'Igbo';
+      }
+      return { tag, name };
     }).sort(function(a, b) {
       if (a.name === b.name) {
         return 0;
@@ -43,6 +87,11 @@ Template.userFormsLayout.events({
     T9n.setLanguage(i18nTagToT9n(i18nTag));
     evt.preventDefault();
   },
+  'click #at-btn'(event, instance) {
+    if (FlowRouter.getRouteName() === 'atSignIn') {
+      authentication(event, instance);
+    }
+  },
 });
 
 Template.defaultLayout.events({
@@ -50,3 +99,62 @@ Template.defaultLayout.events({
     Modal.close();
   },
 });
+
+async function authentication(event, instance) {
+  const match = $('#at-field-username_and_email').val();
+  const password = $('#at-field-password').val();
+
+  if (!match || !password) return;
+
+  const result = await getAuthenticationMethod(instance.currentSetting.get(), match);
+
+  if (result === 'password') return;
+
+  // Stop submit #at-pwd-form
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
+  switch (result) {
+  case 'ldap':
+    Meteor.loginWithLDAP(match, password, function() {
+      FlowRouter.go('/');
+    });
+    break;
+
+  case 'cas':
+    Meteor.loginWithCas(function() {
+      FlowRouter.go('/');
+    });
+    break;
+
+  default:
+    break;
+  }
+}
+
+function getAuthenticationMethod({displayAuthenticationMethod, defaultAuthenticationMethod}, match) {
+  if (displayAuthenticationMethod) {
+    return $('.select-authentication').val();
+  }
+  return getUserAuthenticationMethod(defaultAuthenticationMethod, match);
+}
+
+function getUserAuthenticationMethod(defaultAuthenticationMethod, match) {
+  return new Promise((resolve) => {
+    try {
+      Meteor.subscribe('user-authenticationMethod', match, {
+        onReady() {
+          const user = Users.findOne();
+
+          const authenticationMethod = user
+            ? user.authenticationMethod
+            : defaultAuthenticationMethod;
+
+          resolve(authenticationMethod);
+        },
+      });
+    } catch(error) {
+      resolve(defaultAuthenticationMethod);
+    }
+  });
+}

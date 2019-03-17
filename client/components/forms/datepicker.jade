@@ -1,0 +1,13 @@
+template(name="datepicker")
+    .datepicker-container
+        form.edit-date
+            .js-datepicker
+            .fields
+                .left
+                    input.js-date-field#date(type="text" name="date" value=showDate placeholder=dateFormat autofocus)
+                .right
+                    button.primary.wide.left.js-submit-date(type="submit") {{_ 'OK'}}
+                    button.js-delete-date.negate.wide.right.js-delete-date
+                        i.fa.fa-times
+            if error.get
+                .warning {{_ error.get}}

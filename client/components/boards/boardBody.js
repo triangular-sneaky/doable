@@ -1,9 +1,9 @@
 const subManager = new SubsManager();
+const { calculateIndex, enableClickOnTouch } = Utils;
+const swimlaneWhileSortingHeight = 150;
 
 BlazeComponent.extendComponent({
   onCreated() {
-    this.draggingActive = new ReactiveVar(false);
-    this.showOverlay = new ReactiveVar(false);
     this.isBoardReady = new ReactiveVar(false);
 
     // The pattern we use to manually handle data loading is described here:
@@ -21,16 +21,225 @@ BlazeComponent.extendComponent({
         });
       });
     });
+  },
 
+  onlyShowCurrentCard() {
+    return Utils.isMiniScreen() && Session.get('currentCard');
+  },
+
+}).register('board');
+
+BlazeComponent.extendComponent({
+  onCreated() {
+    this.showOverlay = new ReactiveVar(false);
+    this.draggingActive = new ReactiveVar(false);
     this._isDragging = false;
-    this._lastDragPositionX = 0;
-
     // Used to set the overlay
     this.mouseHasEnterCardDetails = false;
+
+     // feature: focus on me if focus=me query param is there
+    const currentBoardId = Session.get('currentBoard');
+    Lens.init(currentBoardId);
+    if (Features.queryParamExtensions.focus) {
+      const focus = FlowRouter.current().queryParams.focus;
+      if (focus) {
+        Lens.setFocusLevel(focus);
+      }
+    }
+
+    // fix swimlanes sort field if there are null values
+    const currentBoardData = Boards.findOne(Session.get('currentBoard'));
+    const nullSortSwimlanes = currentBoardData.nullSortSwimlanes();
+    if (nullSortSwimlanes.count() > 0) {
+      const swimlanes = currentBoardData.swimlanes();
+      let count = 0;
+      swimlanes.forEach((s) => {
+        Swimlanes.update(s._id, {
+          $set: {
+            sort: count,
+          },
+        });
+        count += 1;
+      });
+    }
+
+    // fix lists sort field if there are null values
+    const nullSortLists = currentBoardData.nullSortLists();
+    if (nullSortLists.count() > 0) {
+      const lists = currentBoardData.lists();
+      let count = 0;
+      lists.forEach((l) => {
+        Lists.update(l._id, {
+          $set: {
+            sort: count,
+          },
+        });
+        count += 1;
+      });
+    }
+  },
+  onRendered() {
+    const boardComponent = this;
+    const $swimlanesDom = boardComponent.$('.js-swimlanes');
+
+    $swimlanesDom.sortable({
+      tolerance: 'pointer',
+      appendTo: '.board-canvas',
+      helper(evt, item) {
+        const helper = $(`<div class="swimlane"
+                               style="flex-direction: column;
+                                      height: ${swimlaneWhileSortingHeight}px;
+                                      width: $(boardComponent.width)px;
+                                      overflow: hidden;"/>`);
+        helper.append(item.clone());
+        // Also grab the list of lists of cards
+        const list = item.next();
+        helper.append(list.clone());
+        return helper;
+      },
+      handle: '.js-swimlane-header',
+      items: '.swimlane:not(.placeholder)',
+      placeholder: 'swimlane placeholder',
+      distance: 7,
+      start(evt, ui) {
+        const listDom = ui.placeholder.next('.js-swimlane');
+        const parentOffset = ui.item.parent().offset();
+
+        ui.placeholder.height(ui.helper.height());
+        EscapeActions.executeUpTo('popup-close');
+        listDom.addClass('moving-swimlane');
+        boardComponent.setIsDragging(true);
+
+        ui.placeholder.insertAfter(ui.placeholder.next());
+        boardComponent.origPlaceholderIndex = ui.placeholder.index();
+
+        // resize all swimlanes + headers to be a total of 150 px per row
+        // this could be achieved by setIsDragging(true) but we want immediate
+        // result
+        ui.item.siblings('.js-swimlane').css('height', `${swimlaneWhileSortingHeight - 26}px`);
+
+        // set the new scroll height after the resize and insertion of
+        // the placeholder. We want the element under the cursor to stay
+        // at the same place on the screen
+        ui.item.parent().get(0).scrollTop = ui.placeholder.get(0).offsetTop + parentOffset.top - evt.pageY;
+      },
+      beforeStop(evt, ui) {
+        const parentOffset = ui.item.parent().offset();
+        const siblings = ui.item.siblings('.js-swimlane');
+        siblings.css('height', '');
+
+        // compute the new scroll height after the resize and removal of
+        // the placeholder
+        const scrollTop = ui.placeholder.get(0).offsetTop + parentOffset.top - evt.pageY;
+
+        // then reset the original view of the swimlane
+        siblings.removeClass('moving-swimlane');
+
+        // and apply the computed scrollheight
+        ui.item.parent().get(0).scrollTop = scrollTop;
+      },
+      stop(evt, ui) {
+        // To attribute the new index number, we need to get the DOM element
+        // of the previous and the following card -- if any.
+        const prevSwimlaneDom = ui.item.prevAll('.js-swimlane').get(0);
+        const nextSwimlaneDom = ui.item.nextAll('.js-swimlane').get(0);
+        const sortIndex = calculateIndex(prevSwimlaneDom, nextSwimlaneDom, 1);
+
+        $swimlanesDom.sortable('cancel');
+        const swimlaneDomElement = ui.item.get(0);
+        const swimlane = Blaze.getData(swimlaneDomElement);
+
+        Swimlanes.update(swimlane._id, {
+          $set: {
+            sort: sortIndex.base,
+          },
+        });
+
+        boardComponent.setIsDragging(false);
+      },
+      sort(evt, ui) {
+        // get the mouse position in the sortable
+        const parentOffset = ui.item.parent().offset();
+        const cursorY = evt.pageY - parentOffset.top + ui.item.parent().scrollTop();
+
+        // compute the intended index of the placeholder (we need to skip the
+        // slots between the headers and the list of cards)
+        const newplaceholderIndex = Math.floor(cursorY / swimlaneWhileSortingHeight);
+        let destPlaceholderIndex = (newplaceholderIndex + 1) * 2;
+
+        // if we are scrolling far away from the bottom of the list
+        if (destPlaceholderIndex >= ui.item.parent().get(0).childElementCount) {
+          destPlaceholderIndex = ui.item.parent().get(0).childElementCount - 1;
+        }
+
+        // update the placeholder position in the DOM tree
+        if (destPlaceholderIndex !== ui.placeholder.index()) {
+          if (destPlaceholderIndex < boardComponent.origPlaceholderIndex) {
+            ui.placeholder.insertBefore(ui.placeholder.siblings().slice(destPlaceholderIndex - 2, destPlaceholderIndex - 1));
+          } else {
+            ui.placeholder.insertAfter(ui.placeholder.siblings().slice(destPlaceholderIndex - 1, destPlaceholderIndex));
+          }
+        }
+      },
+    });
+
+    // ugly touch event hotfix
+    enableClickOnTouch('.js-swimlane:not(.placeholder)');
+
+    function userIsMember() {
+      return Meteor.user() && Meteor.user().isBoardMember() && !Meteor.user().isCommentOnly();
+    }
+
+    // If there is no data in the board (ie, no lists) we autofocus the list
+    // creation form by clicking on the corresponding element.
+    const currentBoard = Boards.findOne(Session.get('currentBoard'));
+    if (userIsMember() && currentBoard.lists().count() === 0) {
+      boardComponent.openNewListForm();
+    }
+  },
+
+  isViewSwimlanes() {
+    const currentUser = Meteor.user();
+    if (!currentUser) return false;
+    return (currentUser.profile.boardView === 'board-view-swimlanes');
+  },
+
+  isViewLists() {
+    const currentUser = Meteor.user();
+    if (!currentUser) return true;
+    return (currentUser.profile.boardView === 'board-view-lists');
+  },
+
+  isViewCalendar() {
+    const currentUser = Meteor.user();
+    if (!currentUser) return false;
+    return (currentUser.profile.boardView === 'board-view-cal');
   },
 
   openNewListForm() {
-    this.childComponents('addListForm')[0].open();
+    if (this.isViewSwimlanes()) {
+      this.childComponents('swimlane')[0]
+        .childComponents('addListAndSwimlaneForm')[0].open();
+    } else if (this.isViewLists()) {
+      this.childComponents('listsGroup')[0]
+        .childComponents('addListForm')[0].open();
+    }
+  },
+  events() {
+    return [{
+      // XXX The board-overlay div should probably be moved to the parent
+      // component.
+      'mouseenter .board-overlay'() {
+        if (this.mouseHasEnterCardDetails) {
+          this.showOverlay.set(false);
+        }
+      },
+      'mouseup'() {
+        if (this._isDragging) {
+          this._isDragging = false;
+        }
+      },
+    }];
   },
 
   // XXX Flow components allow us to avoid creating these two setter methods by
@@ -41,172 +250,101 @@ BlazeComponent.extendComponent({
   },
 
   scrollLeft(position = 0) {
-    const lists = this.$('.js-lists');
-    lists && lists.animate({
+    const swimlanes = this.$('.js-swimlanes');
+    swimlanes && swimlanes.animate({
       scrollLeft: position,
     });
   },
 
-  currentCardIsInThisList() {
-    const currentCard = Cards.findOne(Session.get('currentCard'));
-    const listId = this.currentData()._id;
-    return currentCard && currentCard.listId === listId;
+  scrollTop(position = 0) {
+    const swimlanes = this.$('.js-swimlanes');
+    swimlanes && swimlanes.animate({
+      scrollTop: position,
+    });
   },
 
-  onlyShowCurrentCard() {
-    return Utils.isMiniScreen() && Session.get('currentCard');
-  },
-
-  events() {
-    return [{
-      // XXX The board-overlay div should probably be moved to the parent
-      // component.
-      'mouseenter .board-overlay'() {
-        if (this.mouseHasEnterCardDetails) {
-          this.showOverlay.set(false);
-        }
-      },
-
-      // Click-and-drag action
-      'mousedown .board-canvas'(evt) {
-        // Translating the board canvas using the click-and-drag action can
-        // conflict with the build-in browser mechanism to select text. We
-        // define a list of elements in which we disable the dragging because
-        // the user will legitimately expect to be able to select some text with
-        // his mouse.
-        const noDragInside = ['a', 'input', 'textarea', 'p', '.js-list-header'];
-        if ($(evt.target).closest(noDragInside.join(',')).length === 0 && $('.lists').prop('clientHeight') > evt.offsetY) {
-          this._isDragging = true;
-          this._lastDragPositionX = evt.clientX;
-        }
-      },
-      'mouseup'() {
-        if (this._isDragging) {
-          this._isDragging = false;
-        }
-      },
-      'mousemove'(evt) {
-        if (this._isDragging) {
-          // Update the canvas position
-          this.listsDom.scrollLeft -= evt.clientX - this._lastDragPositionX;
-          this._lastDragPositionX = evt.clientX;
-          // Disable browser text selection while dragging
-          evt.stopPropagation();
-          evt.preventDefault();
-          // Don't close opened card or inlined form at the end of the
-          // click-and-drag.
-          EscapeActions.executeUpTo('popup-close');
-          EscapeActions.preventNextClick();
-        }
-      },
-    }];
-  },
-}).register('board');
-
-Template.boardBody.onRendered(function() {
-  const self = BlazeComponent.getComponentForElement(this.firstNode);
-
-  self.listsDom = this.find('.js-lists');
-
-  if (!Session.get('currentCard')) {
-    self.scrollLeft();
-  }
-
-  // We want to animate the card details window closing. We rely on CSS
-  // transition for the actual animation.
-  self.listsDom._uihooks = {
-    removeElement(node) {
-      const removeNode = _.once(() => {
-        node.parentNode.removeChild(node);
-      });
-      if ($(node).hasClass('js-card-details')) {
-        $(node).css({
-          flexBasis: 0,
-          padding: 0,
-        });
-        $(self.listsDom).one(CSSEvents.transitionend, removeNode);
-      } else {
-        removeNode();
-      }
-    },
-  };
-
-  $(self.listsDom).sortable({
-    tolerance: 'pointer',
-    helper: 'clone',
-    handle: '.js-list-header',
-    items: '.js-list:not(.js-list-composer)',
-    placeholder: 'list placeholder',
-    distance: 7,
-    start(evt, ui) {
-      ui.placeholder.height(ui.helper.height());
-      Popup.close();
-    },
-    stop() {
-      $(self.listsDom).find('.js-list:not(.js-list-composer)').each(
-        (i, list) => {
-          const data = Blaze.getData(list);
-          Lists.update(data._id, {
-            $set: {
-              sort: i,
-            },
-          });
-        }
-      );
-    },
-  });
-
-  function userIsMember() {
-    return Meteor.user() && Meteor.user().isBoardMember();
-  }
-
-  // Disable drag-dropping while in multi-selection mode, or if the current user
-  // is not a board member
-  self.autorun(() => {
-    const $listDom = $(self.listsDom);
-    if ($listDom.data('sortable')) {
-      $(self.listsDom).sortable('option', 'disabled',
-        MultiSelection.isActive() || !userIsMember());
-    }
-  });
-
-  // If there is no data in the board (ie, no lists) we autofocus the list
-  // creation form by clicking on the corresponding element.
-  const currentBoard = Boards.findOne(Session.get('currentBoard'));
-  if (userIsMember() && currentBoard.lists().count() === 0) {
-    self.openNewListForm();
-  }
-});
+}).register('boardBody');
 
 BlazeComponent.extendComponent({
-  // Proxy
-  open() {
-    this.childComponents('inlinedForm')[0].open();
+  onRendered() {
+    this.autorun(function(){
+      $('#calendar-view').fullCalendar('refetchEvents');
+    });
   },
-
-  events() {
-    return [{
-      submit(evt) {
-        evt.preventDefault();
-        const titleInput = this.find('.list-name-input');
-        const title = titleInput.value.trim();
-        if (title) {
-          Lists.insert({
-            title,
-            boardId: Session.get('currentBoard'),
-            sort: $('.list').length,
+  calendarOptions() {
+    return {
+      id: 'calendar-view',
+      defaultView: 'agendaDay',
+      editable: true,
+      timezone: 'local',
+      header: {
+        left: 'title   today prev,next',
+        center: 'agendaDay,listDay,timelineDay agendaWeek,listWeek,timelineWeek month,timelineMonth timelineYear',
+        right: '',
+      },
+      // height: 'parent', nope, doesn't work as the parent might be small
+      height: 'auto',
+      /* TODO: lists as resources: https://fullcalendar.io/docs/vertical-resource-view */
+      navLinks: true,
+      nowIndicator: true,
+      businessHours: {
+        // days of week. an array of zero-based day of week integers (0=Sunday)
+        dow: [ 1, 2, 3, 4, 5 ], // Monday - Friday
+        start: '8:00',
+        end: '18:00',
+      },
+      locale: TAPi18n.getLanguage(),
+      events(start, end, timezone, callback) {
+        const currentBoard = Boards.findOne(Session.get('currentBoard'));
+        const events = [];
+        currentBoard.cardsInInterval(start.toDate(), end.toDate()).forEach(function(card){
+          events.push({
+            id: card._id,
+            title: card.title,
+            start: card.startAt,
+            end: card.endAt,
+            allDay: Math.abs(card.endAt.getTime() - card.startAt.getTime()) / 1000 === 24*3600,
+            url: FlowRouter.url('card', {
+              boardId: currentBoard._id,
+              slug: currentBoard.slug,
+              cardId: card._id,
+            }),
           });
+        });
+        callback(events);
+      },
+      eventResize(event, delta, revertFunc) {
+        let isOk = false;
+        const card = Cards.findOne(event.id);
 
-          titleInput.value = '';
-          titleInput.focus();
+        if (card) {
+          card.setEnd(event.end.toDate());
+          isOk = true;
+        }
+        if (!isOk) {
+          revertFunc();
         }
       },
-    }];
+      eventDrop(event, delta, revertFunc) {
+        let isOk = false;
+        const card = Cards.findOne(event.id);
+        if (card) {
+          // TODO: add a flag for allDay events
+          if (!event.allDay) {
+            card.setStart(event.start.toDate());
+            card.setEnd(event.end.toDate());
+            isOk = true;
+          }
+        }
+        if (!isOk) {
+          revertFunc();
+        }
+      },
+    };
   },
-}).register('addListForm');
-
-Template.boardBody.helpers({
-  canSeeAddList() {
-    return Meteor.user() && Meteor.user().isBoardMember() && !Meteor.user().isCommentOnly();
+  isViewCalendar() {
+    const currentUser = Meteor.user();
+    if (!currentUser) return false;
+    return (currentUser.profile.boardView === 'board-view-cal');
   },
-});
+}).register('calendarView');

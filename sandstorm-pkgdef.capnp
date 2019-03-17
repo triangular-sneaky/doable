@@ -22,10 +22,10 @@ const pkgdef :Spk.PackageDefinition = (
     appTitle = (defaultText = "Wekan"),
     # The name of the app as it is displayed to the user.
 
-    appVersion = 48,
+    appVersion = 237,
     # Increment this for every release.
 
-    appMarketingVersion = (defaultText = "0.63.0~2017-12-20"),
+    appMarketingVersion = (defaultText = "2.35.0~2019-03-01"),
     # Human-readable presentation of the app version.
 
     minUpgradableAppVersion = 0,
@@ -90,6 +90,7 @@ const pkgdef :Spk.PackageDefinition = (
         defaultText = embed "CHANGELOG.md",
         localizations = [
           (locale = "fr", text = embed "meta/t9n-changelog/fr.md"),
+          (locale = "fi", text = embed "meta/t9n-changelog/fi.md"),
         ],
       )
     )
@@ -117,12 +118,14 @@ const pkgdef :Spk.PackageDefinition = (
           defaultText = "participate",
           localizations = [
             (locale = "fr", text = "participer"),
+            (locale = "fi", text = "osallistu"),
           ],
         ),
         description = (
           defaultText = "allows participating in the board",
           localizations = [
             (locale = "fr", text = "permet de participer dans le tableau"),
+            (locale = "fi", text = "mahdollistaa taululle osallistumisen"),
           ],
         )
       ), (
@@ -131,12 +134,14 @@ const pkgdef :Spk.PackageDefinition = (
           defaultText = "configure",
           localizations = [
             (locale = "fr", text = "configurer"),
+            (locale = "fi", text = "asetukset"),
           ],
         ),
         description = (
           defaultText = "allows configuring the board",
           localizations = [
             (locale = "fr", text = "permet de configurer le tableau"),
+            (locale = "fi", text = "mahdollistaa taulun asetusten määrittämisen"),
           ],
         )
       )],
@@ -146,6 +151,7 @@ const pkgdef :Spk.PackageDefinition = (
           defaultText = "observer",
           localizations = [
             (locale = "fr", text = "observateur"),
+            (locale = "fi", text = "tarkkailija"),
           ],
         ),
         permissions = [false, false],
@@ -153,6 +159,7 @@ const pkgdef :Spk.PackageDefinition = (
           defaultText = "can read",
           localizations = [
             (locale = "fr", text = "peut lire"),
+            (locale = "fi", text = "voi lukea"),
           ],
         )
       ), (
@@ -160,6 +167,7 @@ const pkgdef :Spk.PackageDefinition = (
           defaultText = "member",
           localizations = [
             (locale = "fr", text = "membre"),
+            (locale = "fi", text = "jäsen"),
           ],
         ),
         permissions = [true, false],
@@ -167,6 +175,7 @@ const pkgdef :Spk.PackageDefinition = (
           defaultText = "can edit",
           localizations = [
             (locale = "fr", text = "peut éditer"),
+            (locale = "fi", text = "voi muokata"),
           ],
         ),
         default = true,
@@ -217,7 +226,7 @@ const pkgdef :Spk.PackageDefinition = (
         verbPhrase = (defaultText = "removed from card"),
       ), ],
     ),
-
+    apiPath = "/",
     saveIdentityCaps = true,
   ),
 );
@@ -228,6 +237,22 @@ const myCommand :Spk.Manifest.Command = (
   environ = [
     # Note that this defines the *entire* environment seen by your app.
     (key = "PATH", value = "/usr/local/bin:/usr/bin:/bin"),
+    (key = "WITH_API", value = "true"),
+    (key = "MATOMO_ADDRESS", value=""),
+    (key = "MATOMO_SITE_ID", value=""),
+    (key = "MATOMO_DO_NOT_TRACK", value="true"),
+    (key = "MATOMO_WITH_USERNAME", value="false"),
+    (key = "BROWSER_POLICY_ENABLED", value="true"),
+    (key = "TRUSTED_URL", value=""),
+    (key = "WEBHOOKS_ATTRIBUTES", value=""),
+    (key = "OAUTH2_ENABLED", value=""),
+    (key = "OAUTH2_CLIENT_ID", value="false"),
+    (key = "OAUTH2_SECRET", value=""),
+    (key = "OAUTH2_SERVER_URL", value=""),
+    (key = "OAUTH2_AUTH_ENDPOINT", value=""),
+    (key = "OAUTH2_USERINFO_ENDPOINT", value=""),
+    (key = "OAUTH2_TOKEN_ENDPOINT", value=""),
+    (key = "LDAP_ENABLE", value="false"),
     (key = "SANDSTORM", value = "1"),
     (key = "METEOR_SETTINGS", value = "{\"public\": {\"sandstorm\": true}}")
   ]
