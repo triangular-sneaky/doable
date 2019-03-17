@@ -9,9 +9,14 @@ CardAutocompletion = {
       {
         match: /\B:\s?([-+\w]*)$/,
         search(term, callback) {
-          callback(Emoji.values.map((emoji) => {
-            return emoji.includes(term) ? emoji : null;
-          }).filter(Boolean));
+          callback(Emoji.values.map((emoji) => ({emoji: emoji, index: emoji.indexOf(term)}))
+            .filter(v => v.index != -1)
+            .sort((a,b) => {
+              if (a.index == 0 && b.index != 0) return -1;
+              if (b.index == 0 && a.index != 0) return 1;
+              return a.emoji.localeCompare(b.emoji);
+            })
+            .map(x => x.emoji));
         },
         template(value) {
           const imgSrc = Emoji.baseImagePath + value;
@@ -143,7 +148,7 @@ CardAutocompletion = {
 
       // Link
       {
-        match: /\b(http[s]?:\/\/\S*)(?<!\))(?:(?<!\.) )?$/i,
+        match: /\b(http[s]?:\/\/[^) ]*)\s?$/i,
         index: 1,
         search(term, callback) {
           let regex = /[\/\?.&#=]([^\/\?.&#=]+)/g;

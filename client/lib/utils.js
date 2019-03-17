@@ -101,16 +101,15 @@ Utils = {
     };
   },
 
-  // getBoardBodyComponent(component) {
-  //   const p = component.parentComponent();
-  //   const gp  = p.parentComponent();
-  //   if (gp) return gp;
-  //   return p;
-  // },
-
   getBoardBodyComponent(component) {
-    return component.parentComponent().parentComponent()
+    const p = component.parentComponent();
+    if (!p) return p;
+    return p.parentComponent();
   },
+
+  // getBoardBodyComponent(component) {
+  //   return component.parentComponent().parentComponent()
+  // },
   // Detect touch device
   isTouchDevice() {
     const isTouchable = (() => {
