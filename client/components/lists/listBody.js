@@ -9,19 +9,20 @@ BlazeComponent.extendComponent({
 
   onRendered() {
     const domElement = this.find('.js-perfect-scrollbar');
+    if (domElement) {
+      this.$(domElement).on('scroll', () => this.updateList(domElement));
+      $(window).on(`resize.${this.data().listId}`, () => this.updateList(domElement));
 
-    this.$(domElement).on('scroll', () => this.updateList(domElement));
-    $(window).on(`resize.${this.data().listId}`, () => this.updateList(domElement));
+      // we add a Mutation Observer to allow propagations of cardlimit
+      // when the spinner stays in the current view (infinite scrolling)
+      this.mutationObserver = new MutationObserver(() => this.updateList(domElement));
 
-    // we add a Mutation Observer to allow propagations of cardlimit
-    // when the spinner stays in the current view (infinite scrolling)
-    this.mutationObserver = new MutationObserver(() => this.updateList(domElement));
+      this.mutationObserver.observe(domElement, {
+        childList: true,
+      });
 
-    this.mutationObserver.observe(domElement, {
-      childList: true,
-    });
-
-    this.updateList(domElement);
+      this.updateList(domElement);
+    }
   },
 
   onDestroyed() {
