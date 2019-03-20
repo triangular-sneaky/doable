@@ -237,7 +237,7 @@ if (isSandstorm && Meteor.isServer) {
     // in the manifest?
     const base = req.headers['x-sandstorm-base-path'];
     const { _id, slug } = sandstormBoard;
-    const boardPath = FlowRouter.path('board', { id: _id, slug });
+    const boardPath = AppRouter.path('board', { id: _id, slug });
 
     res.writeHead(301, {
       Location: base + boardPath,

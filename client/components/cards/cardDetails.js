@@ -103,7 +103,7 @@ BlazeComponent.extendComponent({
     if (card) {
       const board = Boards.findOne(card.boardId);
       if (board) {
-        result = FlowRouter.url('card', {
+        result = AppRouter.url('card', {
           boardId: card.boardId,
           slug: board.slug,
           cardId: card._id,

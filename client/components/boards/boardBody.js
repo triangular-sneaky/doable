@@ -41,7 +41,7 @@ BlazeComponent.extendComponent({
     const currentBoardId = Session.get('currentBoard');
     Lens.init(currentBoardId);
     if (Features.queryParamExtensions.focus) {
-      const focus = FlowRouter.current().queryParams.focus;
+      const focus = AppRouter.getStickyQueryParams().focus;
       if (focus) {
         Lens.setFocusLevel(focus);
       }
@@ -304,7 +304,7 @@ BlazeComponent.extendComponent({
             start: card.startAt,
             end: card.endAt,
             allDay: Math.abs(card.endAt.getTime() - card.startAt.getTime()) / 1000 === 24*3600,
-            url: FlowRouter.url('card', {
+            url: AppRouter.url('card', {
               boardId: currentBoard._id,
               slug: currentBoard.slug,
               cardId: card._id,

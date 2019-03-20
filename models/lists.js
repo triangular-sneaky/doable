@@ -220,7 +220,7 @@ Lists.helpers({
 
   absoluteUrl() {
     const board = this.board();
-    return FlowRouter.url('list', {
+    return AppRouter.url('list', {
       boardId: board._id,
       slug: board.slug,
       listId: this._id,
