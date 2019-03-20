@@ -2,7 +2,7 @@ Utils = {
   // XXX We should remove these two methods
   goBoardId(_id) {
     const board = Boards.findOne(_id);
-    return board && FlowRouter.go('board', {
+    return board && AppRouter.go('board', {
       id: board._id,
       slug: board.slug,
     });
@@ -11,7 +11,7 @@ Utils = {
   goCardId(_id) {
     const card = Cards.findOne(_id);
     const board = Boards.findOne(card.boardId);
-    return board && FlowRouter.go('card', {
+    return board && AppRouter.go('card', {
       cardId: card._id,
       boardId: board._id,
       slug: board.slug,

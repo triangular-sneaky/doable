@@ -482,7 +482,7 @@ Boards.helpers({
   },
 
   absoluteUrl() {
-    return FlowRouter.url('board', { id: this._id, slug: this.slug });
+    return AppRouter.url('board', { id: this._id, slug: this.slug });
   },
 
   colorClass() {

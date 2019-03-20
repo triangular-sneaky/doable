@@ -511,7 +511,7 @@ Cards.helpers({
 
   absoluteUrl() {
     const board = this.board();
-    return FlowRouter.url('card', {
+    return AppRouter.url('card', {
       boardId: board._id,
       slug: board.slug,
       cardId: this._id,

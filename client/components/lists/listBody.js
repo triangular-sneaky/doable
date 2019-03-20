@@ -27,7 +27,8 @@ BlazeComponent.extendComponent({
 
   onDestroyed() {
     $(window).off(`resize.${this.data().listId}`);
-    this.mutationObserver.disconnect();
+    if (this.mutationObserver)
+      this.mutationObserver.disconnect();
   },
 
   openForm(options) {
