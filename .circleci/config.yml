@@ -13,6 +13,6 @@ jobs:
           version=2.$CIRCLE_BUILD_NUM-2.35-ci
           docker tag dpoz/wekan:$destination dpoz/wekan:$version
           docker push dpoz/wekan:$destination
-          docker push dpoz/wekan:$version
+          docker push dpoz/wekan:$destination-$version
 
       #https://circleci.com/docs/2.0/building-docker-images/
