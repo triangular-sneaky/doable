@@ -9,7 +9,7 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker-compose -f docker-compose-build.yml build
       - run: |
-          destination=edge
+          destination=latest
           version=2.$CIRCLE_BUILD_NUM-2.35-ci-$CIRCLE_BRANCH
           docker tag dpoz/wekan:$destination dpoz/wekan:$version
           docker push dpoz/wekan:$destination
