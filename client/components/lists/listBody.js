@@ -159,6 +159,11 @@ BlazeComponent.extendComponent({
       evt.stopImmediatePropagation();
       evt.preventDefault();
       Utils.goBoardId(Session.get('currentBoard'));
+    } else {
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+      Utils.goCardId(this.currentData()._id);
+
     }
   },
 
