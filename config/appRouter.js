@@ -6,7 +6,7 @@ AppRouter = {
     return FlowRouter.go(route, params, this.getStickyQueryParams());
   },
   getStickyQueryParams() {
-    return { focus: FlowRouter.current().queryParams.focus} ;
+    return { focus: ((FlowRouter.current() || {}).queryParams || {}).focus} ;
   },
 
 }
