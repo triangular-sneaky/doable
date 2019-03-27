@@ -1,3 +1,6 @@
+import { Subject, timer } from 'rxjs';
+import { debounce } from 'rxjs/operators';
+
 const { calculateIndex, enableClickOnTouch } = Utils;
 
 function currentListIsInThisSwimlane(swimlaneId) {
@@ -218,5 +221,32 @@ BlazeComponent.extendComponent({
     if (!Features.opinions.robustUX.listsSortableOnlyInSwimlane) {
       initSortable(boardComponent, $listsDom);
     }
+
+    if (!Utils.isMiniScreen()) {
+      this.driveListLayout();
+    }
+  },
+
+  onDestroyed() {
+    if (this._resizeObserver)
+      this._resizeObserver.disconnect();
+    if (this._heightSub)
+      this._heightSub.unsubscribe();
+  },
+
+  driveListLayout() {
+    const heightX  = new Subject();
+    this._heightSub = heightX
+      .pipe(
+        debounce(_ => timer(500)))
+      .subscribe(x => x.$$.height(x.height));
+    this._resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const boxEl = entry.target;
+        const dimensions = entry.contentRect;
+        heightX.next({$$: $(boxEl).find(".list-body"), height: dimensions.height - 49});
+      }
+    });
+    this._resizeObserver.observe(this.firstNode());
   },
 }).register('listsGroup');
