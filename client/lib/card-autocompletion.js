@@ -52,8 +52,8 @@ CardAutocompletion = {
       // DueDate
       {
         match: /\B\/([\w\.]*)$/i,
-        parseTerm(term, moments) {
-          const m = moment(term, Features.opinions.dates.formats.date, true);
+        parseTerm(term, moments, withTime) {
+          const m = withTime(moment(term, Features.opinions.dates.formats.date, true));
           if (m.isValid()) {
             moments.push(m);
             return;
@@ -61,7 +61,7 @@ CardAutocompletion = {
           // maybe its a date
           const date = parseInt(term);
           if (date) {
-            const justDate = moment().date(date);
+            const justDate = withTime( moment().date(date));
             const monthsOffset = moment().date() <= justDate.date() ? 0 : 1;
             if (justDate.isValid()) {
               for (var i = 0; i < 2; i++) {
@@ -75,7 +75,7 @@ CardAutocompletion = {
           }
 
           // maybe its a day?
-          const day = moment().day(term);
+          const day = withTime(moment().day(term));
           if (day.isValid()) {
             moments.push(day);
             moments.push(day.clone().add(7, 'd'));
@@ -85,11 +85,15 @@ CardAutocompletion = {
         },
         search(term, callback) {
           var moments = [];
+          tod = moment(Features.opinions.dates.dayStartTime, Features.opinions.dates.formats.time);
+          withTime = m => m.startOf('day').add(tod);
           if (term.length > 0) {
-            this.parseTerm(term, moments);
+            this.parseTerm(term, moments, withTime);
           } else {
-            moments = [ moment(), moment().add(1, 'd'), moment().day(5), moment().day(7) ];
+            now = withTime(moment());
+            moments = [ now, now.clone().add(1, 'd'), now.clone().day(5), now.clone().day(7) ];
           }
+          //moments = moments.map(m => m.tim)
           callback(moments);
         },
         template(date) {
@@ -106,7 +110,7 @@ CardAutocompletion = {
               } else if (diffDays > 6 && diffDays < 14)  return '[Next] dddd';
               else return 'dddd (LL)';
             }
-          })}, ${date.endOf('day').fromNow()}</span>`;
+          })}, ${date.clone().endOf('day').fromNow()}</span>`;
         },
 
         replace(date) {
