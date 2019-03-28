@@ -311,7 +311,7 @@ class CardDueDate extends CardDate {
     // if there is an end date, don't need to flag the due date
     else if (endAt)
       classes += '';
-    else if (now.diff(theDate, 'days') >= 2)
+    else if (now.diff(theDate, 'days') >= 1)
       classes += 'long-overdue';
     else if (now.diff(theDate, 'minute') >= 0)
       classes += 'due';
