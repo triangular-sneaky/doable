@@ -97,7 +97,7 @@ CardAutocompletion = {
           callback(moments);
         },
         template(date) {
-          return `<span>${date.format(Features.opinions.dates.formats.date)}&nbsp</span><span class="altName">${date.calendar(null, {
+          return `<span>${Utils.dates.format(date)}&nbsp</span><span class="altName">${date.calendar(null, {
             sameDay: '[Today]',
             nextDay: '[Tomorrow]',
             nextWeek: 'dddd',
@@ -116,7 +116,7 @@ CardAutocompletion = {
         replace(date) {
           if (handlers.date)
             return handlers.date(date.toDate());
-          return `/${date.format(Features.opinions.dates.formats.date)}`;
+          return `/${Utils.dates.format(date )}`;
         },
         index: 1
       },

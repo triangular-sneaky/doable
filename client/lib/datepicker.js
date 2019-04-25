@@ -16,7 +16,7 @@ DatePicker = BlazeComponent.extendComponent({
       language: TAPi18n.getLanguage(),
       weekStart: 1
     }).on('changeDate', function(evt) {
-      this.find('#date').value = moment(evt.date).format(Features.opinions.dates.formats.date);
+      this.find('#date').value = Utils.dates.format(moment(evt.date));
       this.error.set('');
       this._submitDate(evt.date);
     }.bind(this));
@@ -29,7 +29,7 @@ DatePicker = BlazeComponent.extendComponent({
 
   showDate() {
     if (this.date.get().isValid())
-      return this.date.get().format(Features.opinions.dates.formats.date);
+      return Utils.dates.format(this.date.get());
     return '';
   },
   showTime() {

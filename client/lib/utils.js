@@ -258,6 +258,16 @@ Utils = {
     }
     return finalString;
   },
+
+  dates: {
+    parse(string) {
+
+    },
+
+    format(meteorDate) {
+      return meteorDate.format(Features.opinions.dates.formats.date);
+    }
+  }
 };
 
 // A simple tracker dependency that we invalidate every time the window is

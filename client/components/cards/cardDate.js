@@ -17,7 +17,7 @@ BlazeComponent.extendComponent({
       language: TAPi18n.getLanguage(),
       weekStart: 1
     }).on('changeDate', function(evt) {
-      this.find('#date').value = moment(evt.date).format(Features.opinions.dates.formats.date);
+      this.find('#date').value = Utils.dates.format(moment(evt.date) );
       this.error.set('');
       this.find('#time').focus();
     }.bind(this));
@@ -31,7 +31,7 @@ BlazeComponent.extendComponent({
 
   showDate() {
     if (this.date.get().isValid())
-      return this.date.get().format(Features.opinions.dates.formats.date);
+      return Utils.dates.format(this.date.get()  );
     return '';
   },
   showTime() {
@@ -208,7 +208,7 @@ const CardDate = BlazeComponent.extendComponent({
     //   sameElse: 'llll',
     // });
 
-    return this.date.get().format(Features.opinions.dates.formats.date);
+    return Utils.dates.format(this.date.get());
   },
 
   showISODate() {
@@ -280,7 +280,7 @@ class CardStartDate extends CardDate {
   }
 
   showTitle() {
-    return `${TAPi18n.__('card-start-on')} ${this.date.get().format(Features.opinions.dates.formats.date)}`;
+    return `${TAPi18n.__('card-start-on')} ${Utils.dates.format(this.date.get()  )}`;
   }
 
   events() {
@@ -321,7 +321,7 @@ class CardDueDate extends CardDate {
   }
 
   showTitle() {
-    return `${TAPi18n.__('card-due-on')} ${this.date.get().format(Features.opinions.dates.formats.date)}`;
+    return `${TAPi18n.__('card-due-on')} ${Utils.dates.format(this.date.get())}`;
   }
 
   events() {
@@ -374,13 +374,13 @@ CardEndDate.register('cardEndDate');
 
 (class extends CardStartDate {
   showDate() {
-    return this.date.get().format(Features.opinions.dates.formats.date);
+    return Utils.dates.format(this.date.get());
   }
 }).register('minicardStartDate');
 
 (class extends CardDueDate {
   showDate() {
-    return this.date.get().format(Features.opinions.dates.formats.date);
+    return Utils.dates.format(this.date.get());
   }
 }).register('minicardDueDate');
 
