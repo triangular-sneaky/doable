@@ -53,7 +53,7 @@ QuickFilter = {
     ],
     "!": [
       { regex: _ => normalRegex(" /|:o:|:fire:|:bulb:"), target: searcherInAttributes("img", e => e.title) },
-      { regex: _ => normalRegex("."), target: e => getAllBodies($(e).find(".dates .due-date")) }
+      { regex: term => term !== "-/" ? normalRegex(".") : null, target: e => getAllBodies($(e).find(".dates .due-date")) }
     ],
     "//": [
       { regex: _ => normalRegex("."), target: e => getAllBodies($(e).find(".dates .due-date.due, .dates .due-date.long-overdue, .dates .due-date.almost-due")) }
@@ -70,7 +70,7 @@ QuickFilter = {
     debounce(_ => timer(150))
   ).subscribe(c => this.doFilterCards(c));
 },
-  commandParser: /^(-?)([#№:@*!]||\/\/|(?:\s*\/(?:[^\/]|$)))?(.*)$/i,
+  commandParser: /^(-?)([#№:@*!]|\/\/|(?:\s*\/))?(.*)$/i,
 
   filterExpression$: new Subject(),
 
