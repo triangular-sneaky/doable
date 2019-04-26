@@ -53,7 +53,7 @@ Template.header.events({
   },
 
   'keydown #zz-quick-filter'(e) {
-    if (e.key == "Escape") filter.blur();
+    if (e.key == "Escape") e.target.blur();
   }
 
 });
