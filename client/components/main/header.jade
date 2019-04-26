@@ -39,8 +39,9 @@ template(name="header")
       a#header-new-board-icon.js-create-board
         i.fa.fa-plus(title="Create a new board")
 
-      if currentBoard
-        input(type="text" id="zz-quick-filter")
+      unless isMiniScreen
+        if currentBoard
+          input(type="text" id="zz-quick-filter")
 
       a.board-header-btn.js-open-search-view(title="{{_ 'search'}}")
         i.fa.fa-search
