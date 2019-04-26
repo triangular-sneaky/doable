@@ -47,4 +47,13 @@ Template.header.events({
   'click .js-open-search-view'() {
     Sidebar.setView('search');
   },
+
+  'input #zz-quick-filter'(e) {
+    QuickFilter.filterCards(e.target.value);
+  },
+
+  'keydown #zz-quick-filter'(e) {
+    if (e.key == "Escape") filter.blur();
+  }
+
 });
