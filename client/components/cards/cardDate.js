@@ -273,8 +273,6 @@ class CardStartDate extends CardDate {
        ((dueAt) && (theDate.isAfter(dueAt))))
       classes += 'long-overdue';
     else if (theDate.isBefore(now, 'minute'))
-      classes += 'almost-due';
-    else
       classes += 'current';
     return classes;
   }
