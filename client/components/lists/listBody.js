@@ -171,6 +171,14 @@ BlazeComponent.extendComponent({
     return Session.equals('currentCard', this.currentData()._id);
   },
 
+  cardIsLastEdit() {
+    if (!Features.opinions.highlightRecentCards) return false;
+    if (this.cardIsSelected()) return false;
+
+    const extra = Session.get('currentCardExtra');
+    return extra && extra.id === this.currentData()._id;
+  },
+
   toggleMultiSelection(evt) {
     evt.stopPropagation();
     evt.preventDefault();

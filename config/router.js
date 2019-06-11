@@ -74,6 +74,11 @@ FlowRouter.route('/b/:boardId/:slug/:cardId', {
     Session.set('currentBoard', params.boardId);
     Session.set('currentCard', params.cardId);
 
+    Session.set('currentCardExtra', {
+      id: params.cardId,
+      edit: params.edit
+    });
+
     Utils.manageCustomUI();
     Utils.manageMatomo();
 
