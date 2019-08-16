@@ -14,7 +14,8 @@ CardAutocompletion = {
             .sort((a,b) => {
               if (a.index == 0 && b.index != 0) return -1;
               if (b.index == 0 && a.index != 0) return 1;
-              return a.emoji.localeCompare(b.emoji);
+              // return a.emoji.localeCompare(b.emoji);
+              return 1;
             })
             .map(x => x.emoji));
         },
