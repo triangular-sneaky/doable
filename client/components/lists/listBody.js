@@ -23,6 +23,16 @@ BlazeComponent.extendComponent({
 
       this.updateList(domElement);
     }
+
+    if (Utils.isMiniScreen()) {
+      const lastEdit = $('.last-edit');
+      if (lastEdit.length) {
+        // this.$('.minicards').animate({
+        //   scrollTop:  lastEdit.position().top
+        // });
+        this.firstNode().scrollTop =  lastEdit.position().top;
+      }
+    }
   },
 
   onDestroyed() {
@@ -251,6 +261,7 @@ BlazeComponent.extendComponent({
   events() {
     return [{
       'click .js-minicard': this.clickOnMiniCard,
+      'dblclick .js-minicard': this.clickOnMiniCard,
       'click .js-toggle-multi-selection': this.toggleMultiSelection,
       'click .open-minicard-composer': this.scrollToBottom,
       submit: this.addCard,

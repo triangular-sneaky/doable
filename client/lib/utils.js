@@ -15,6 +15,7 @@ Utils = {
       cardId: card._id,
       boardId: board._id,
       slug: board.slug,
+      edit: true
     });
   },
 

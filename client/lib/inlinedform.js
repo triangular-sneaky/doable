@@ -24,6 +24,11 @@ InlinedForm = BlazeComponent.extendComponent({
     this.isOpen = new ReactiveVar(false);
   },
 
+  onRendered() {
+    if (this.currentData().openByDefault)
+      this.open();
+  },
+
   onDestroyed() {
     currentlyOpenedForm.set(null);
   },

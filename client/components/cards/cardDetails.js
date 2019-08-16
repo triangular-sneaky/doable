@@ -36,6 +36,18 @@ BlazeComponent.extendComponent({
     this.calculateNextPeak();
 
     Meteor.subscribe('unsaved-edits');
+
+
+
+
+  },
+
+  openTitle() {
+    const extra = Session.get('currentCardExtra');
+    if (extra && extra.id === this.currentData()._id && extra.edit) {
+      this.getChildComponent(".js-card-details-title").open();
+    }
+
   },
 
   isWatching() {
@@ -209,6 +221,8 @@ BlazeComponent.extendComponent({
         $subtasksDom.sortable('option', 'disabled', !userIsMember());
       }
     });
+
+    this.openTitle();
   },
 
   onDestroyed() {

@@ -66,7 +66,7 @@ FlowRouter.route('/b/:boardId/:slug/l/:listId', {
 });
 
 
-FlowRouter.route('/b/:boardId/:slug/:cardId', {
+FlowRouter.route('/b/:boardId/:slug/:cardId/:edit', {
   name: 'card',
   action(params) {
     EscapeActions.executeUpTo('inlinedForm');
@@ -78,6 +78,10 @@ FlowRouter.route('/b/:boardId/:slug/:cardId', {
       id: params.cardId,
       edit: params.edit
     });
+
+
+    if (params.edit) {
+    }
 
     Utils.manageCustomUI();
     Utils.manageMatomo();
