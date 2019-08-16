@@ -1,4 +1,6 @@
-Emoji.values = ['+1', '-1', '100', '1234', '8ball', 'a', 'ab', 'abc', 'abcd',
+Emoji.specialValues = ['fire','o','m','dash','feet','question','bulb','thought_balloon','grey_question','wave','repeat'];
+
+Emoji.allValues = ['+1', '-1', '100', '1234', '8ball', 'a', 'ab', 'abc', 'abcd',
   'accept', 'aerial_tramway', 'airplane', 'alarm_clock', 'alien', 'ambulance',
   'anchor', 'angel', 'anger', 'angry', 'anguished', 'ant', 'apple', 'aquarius',
   'aries', 'arrow_backward', 'arrow_double_down', 'arrow_double_up', 'arrow_down',
@@ -150,3 +152,5 @@ Emoji.values = ['+1', '-1', '100', '1234', '8ball', 'a', 'ab', 'abc', 'abcd',
   'wind_chime', 'wine_glass', 'wink', 'wolf', 'woman', 'womans_clothes',
   'womans_hat', 'womens', 'worried', 'wrench', 'x', 'yellow_heart', 'yen', 'yum',
   'zap', 'zero', 'zzz'];
+
+Emoji.values = Emoji.specialValues.concat(Emoji.allValues.filter(v => !Emoji.specialValues.includes(v)));
