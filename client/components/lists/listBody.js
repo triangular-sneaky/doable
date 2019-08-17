@@ -23,6 +23,16 @@ BlazeComponent.extendComponent({
 
       this.updateList(domElement);
     }
+
+    if (Utils.isMiniScreen()) {
+      const lastEdit = $('.last-edit');
+      if (lastEdit.length) {
+        // this.$('.minicards').animate({
+        //   scrollTop:  lastEdit.position().top
+        // });
+        this.firstNode().scrollTop =  lastEdit.position().top;
+      }
+    }
   },
 
   onDestroyed() {
@@ -145,30 +155,60 @@ BlazeComponent.extendComponent({
     });
   },
 
-  clickOnMiniCard(evt) {
+  _singleClickOnMinicard(evt){
+    //console.log(evt);
+    if (this._isSingleClick) {
+      this._isSingleClick = false;
+      this.clickOnMiniCard(evt, this.currentData()._id, true);
+    } else {
+      this._isSingleClick = true;
+      let id = this.currentData()._id;
+      Meteor.setTimeout(()=>{
+        if(this._isSingleClick){
+          this._isSingleClick = false;
+          this.clickOnMiniCard(evt, id, false);
+        }
+      }
+      ,100);
+    }
+  },
+  _dblclickOnMinicard(evt){
+      // this._isSingleClick = false;
+      // this.clickOnMiniCard(evt, this.currentData()._id, true);
+  },
+
+  clickOnMiniCard(evt, id, isDblClick) {
     if (MultiSelection.isActive() || evt.shiftKey) {
       evt.stopImmediatePropagation();
       evt.preventDefault();
       const methodName = evt.shiftKey ? 'toggleRange' : 'toggle';
-      MultiSelection[methodName](this.currentData()._id);
+      MultiSelection[methodName](id);
 
       // If the card is already selected, we want to de-select it.
       // XXX We should probably modify the minicard href attribute instead of
       // overwriting the event in case the card is already selected.
-    } else if (Session.equals('currentCard', this.currentData()._id)) {
+    } else if (Session.equals('currentCard', id)) {
       evt.stopImmediatePropagation();
       evt.preventDefault();
       Utils.goBoardId(Session.get('currentBoard'));
     } else {
       evt.stopImmediatePropagation();
       evt.preventDefault();
-      Utils.goCardId(this.currentData()._id);
+      Utils.goCardId(id, isDblClick);
 
     }
   },
 
   cardIsSelected() {
     return Session.equals('currentCard', this.currentData()._id);
+  },
+
+  cardIsLastEdit() {
+    if (!Features.opinions.highlightRecentCards) return false;
+    if (this.cardIsSelected()) return false;
+
+    const extra = Session.get('currentCardExtra');
+    return extra && extra.id === this.currentData()._id;
   },
 
   toggleMultiSelection(evt) {
@@ -242,7 +282,8 @@ BlazeComponent.extendComponent({
 
   events() {
     return [{
-      'click .js-minicard': this.clickOnMiniCard,
+      'click .js-minicard': this._singleClickOnMinicard,
+      'dblclick .js-minicard': this._dblclickOnMinicard,
       'click .js-toggle-multi-selection': this.toggleMultiSelection,
       'click .open-minicard-composer': this.scrollToBottom,
       submit: this.addCard,

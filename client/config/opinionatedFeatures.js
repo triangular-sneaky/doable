@@ -30,7 +30,8 @@ Features = {
         time: 'H:mm'
       },
       dayStartTime: '2:00'
-    }
+    },
+    highlightRecentCards: true
   },
   queryParamExtensions : {
     focus: true

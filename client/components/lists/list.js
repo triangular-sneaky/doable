@@ -94,7 +94,7 @@ BlazeComponent.extendComponent({
     });
 
     // ugly touch event hotfix
-    enableClickOnTouch(itemsSelector);
+    //enableClickOnTouch(itemsSelector);
 
     // Disable drag-dropping if the current user is not a board member or is comment only
     this.autorun(() => {
