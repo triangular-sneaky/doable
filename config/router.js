@@ -66,13 +66,18 @@ FlowRouter.route('/b/:boardId/:slug/l/:listId', {
 });
 
 
-FlowRouter.route('/b/:boardId/:slug/:cardId', {
+FlowRouter.route('/b/:boardId/:slug/:cardId/:edit', {
   name: 'card',
   action(params) {
     EscapeActions.executeUpTo('inlinedForm');
 
     Session.set('currentBoard', params.boardId);
     Session.set('currentCard', params.cardId);
+
+    Session.set('currentCardExtra', {
+      id: params.cardId,
+      edit: params.edit == 1
+    });
 
     Utils.manageCustomUI();
     Utils.manageMatomo();
