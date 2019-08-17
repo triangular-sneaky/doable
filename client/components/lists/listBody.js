@@ -156,17 +156,25 @@ BlazeComponent.extendComponent({
   },
 
   _singleClickOnMinicard(evt){
-    this._isSingleClick = true;
-    let id = this.currentData()._id;
-    Meteor.setTimeout(()=>{
-        if(this._isSingleClick){
-          this.clickOnMiniCard(evt, id, false);
-        }
-    },100);
-  },
-  _dblclickOnMinicard(evt){
+    //console.log(evt);
+    if (this._isSingleClick) {
       this._isSingleClick = false;
       this.clickOnMiniCard(evt, this.currentData()._id, true);
+    } else {
+      this._isSingleClick = true;
+      let id = this.currentData()._id;
+      Meteor.setTimeout(()=>{
+        if(this._isSingleClick){
+          this._isSingleClick = false;
+          this.clickOnMiniCard(evt, id, false);
+        }
+      }
+      ,100);
+    }
+  },
+  _dblclickOnMinicard(evt){
+      // this._isSingleClick = false;
+      // this.clickOnMiniCard(evt, this.currentData()._id, true);
   },
 
   clickOnMiniCard(evt, id, isDblClick) {
