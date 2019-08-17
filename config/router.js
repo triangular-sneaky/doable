@@ -76,12 +76,8 @@ FlowRouter.route('/b/:boardId/:slug/:cardId/:edit', {
 
     Session.set('currentCardExtra', {
       id: params.cardId,
-      edit: params.edit
+      edit: params.edit == 1
     });
-
-
-    if (params.edit) {
-    }
 
     Utils.manageCustomUI();
     Utils.manageMatomo();

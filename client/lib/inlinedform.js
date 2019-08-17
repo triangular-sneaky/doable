@@ -25,8 +25,8 @@ InlinedForm = BlazeComponent.extendComponent({
   },
 
   onRendered() {
-    if (this.currentData().openByDefault)
-      this.open();
+    //if (this.currentData().openByDefault)
+    //this.open();
   },
 
   onDestroyed() {

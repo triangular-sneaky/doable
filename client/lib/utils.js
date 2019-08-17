@@ -8,14 +8,14 @@ Utils = {
     });
   },
 
-  goCardId(_id) {
+  goCardId(_id, edit) {
     const card = Cards.findOne(_id);
     const board = Boards.findOne(card.boardId);
     return board && AppRouter.go('card', {
       cardId: card._id,
       boardId: board._id,
       slug: board.slug,
-      edit: true
+      edit: edit?"1":"0"
     });
   },
 

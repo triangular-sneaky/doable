@@ -155,24 +155,38 @@ BlazeComponent.extendComponent({
     });
   },
 
-  clickOnMiniCard(evt) {
+  _singleClickOnMinicard(evt){
+    this._isSingleClick = true;
+    let id = this.currentData()._id;
+    Meteor.setTimeout(()=>{
+        if(this._isSingleClick){
+          this.clickOnMiniCard(evt, id, false);
+        }
+    },100);
+  },
+  _dblclickOnMinicard(evt){
+      this._isSingleClick = false;
+      this.clickOnMiniCard(evt, this.currentData()._id, true);
+  },
+
+  clickOnMiniCard(evt, id, isDblClick) {
     if (MultiSelection.isActive() || evt.shiftKey) {
       evt.stopImmediatePropagation();
       evt.preventDefault();
       const methodName = evt.shiftKey ? 'toggleRange' : 'toggle';
-      MultiSelection[methodName](this.currentData()._id);
+      MultiSelection[methodName](id);
 
       // If the card is already selected, we want to de-select it.
       // XXX We should probably modify the minicard href attribute instead of
       // overwriting the event in case the card is already selected.
-    } else if (Session.equals('currentCard', this.currentData()._id)) {
+    } else if (Session.equals('currentCard', id)) {
       evt.stopImmediatePropagation();
       evt.preventDefault();
       Utils.goBoardId(Session.get('currentBoard'));
     } else {
       evt.stopImmediatePropagation();
       evt.preventDefault();
-      Utils.goCardId(this.currentData()._id);
+      Utils.goCardId(id, isDblClick);
 
     }
   },
@@ -260,8 +274,8 @@ BlazeComponent.extendComponent({
 
   events() {
     return [{
-      'click .js-minicard': this.clickOnMiniCard,
-      'dblclick .js-minicard': this.clickOnMiniCard,
+      'click .js-minicard': this._singleClickOnMinicard,
+      'dblclick .js-minicard': this._dblclickOnMinicard,
       'click .js-toggle-multi-selection': this.toggleMultiSelection,
       'click .open-minicard-composer': this.scrollToBottom,
       submit: this.addCard,

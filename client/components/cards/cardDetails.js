@@ -43,11 +43,13 @@ BlazeComponent.extendComponent({
   },
 
   openTitle() {
+
     const extra = Session.get('currentCardExtra');
     if (extra && extra.id === this.currentData()._id && extra.edit) {
-      this.getChildComponent(".js-card-details-title").open();
+      Meteor.setTimeout(() => {
+        this.$('.js-card-title.js-open-inlined-form').click();
+      }, 100);
     }
-
   },
 
   isWatching() {
@@ -130,7 +132,7 @@ BlazeComponent.extendComponent({
       Meteor.setTimeout(() => {
         $('.card-details').mCustomScrollbar({theme:'minimal-dark', setWidth: false, setLeft: 0, scrollbarPosition: 'outside', mouseWheel: true });
         this.scrollParentContainer();
-      }, 500);
+      }, 300);
     }
     const $checklistsDom = this.$('.card-checklist-items');
 
@@ -222,7 +224,6 @@ BlazeComponent.extendComponent({
       }
     });
 
-    this.openTitle();
   },
 
   onDestroyed() {
@@ -239,6 +240,7 @@ BlazeComponent.extendComponent({
       },
       [`${CSSEvents.animationend} .js-card-details`]() {
         this.isLoaded.set(true);
+        this.openTitle();
       },
     };
 
