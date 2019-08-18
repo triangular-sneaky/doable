@@ -31,9 +31,10 @@ Features = {
       },
       dayStartTime: '2:00'
     },
-    highlightRecentCards: true
+    highlightRecentCards: true,
+    editCardTitleByDefault: true,
   },
   queryParamExtensions : {
     focus: true
-  }
+  },
 };
