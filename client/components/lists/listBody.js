@@ -155,27 +155,27 @@ BlazeComponent.extendComponent({
     });
   },
 
-  _singleClickOnMinicard(evt){
-    //console.log(evt);
-    if (this._isSingleClick) {
-      this._isSingleClick = false;
-      this.clickOnMiniCard(evt, this.currentData()._id, true);
-    } else {
-      this._isSingleClick = true;
-      let id = this.currentData()._id;
-      Meteor.setTimeout(()=>{
-        if(this._isSingleClick){
-          this._isSingleClick = false;
-          this.clickOnMiniCard(evt, id, false);
-        }
-      }
-      ,100);
-    }
-  },
-  _dblclickOnMinicard(evt){
-      // this._isSingleClick = false;
-      // this.clickOnMiniCard(evt, this.currentData()._id, true);
-  },
+  // _singleClickOnMinicard(evt){
+  //   //console.log(evt);
+  //   if (this._isSingleClick) {
+  //     this._isSingleClick = false;
+  //     this.clickOnMiniCard(evt, this.currentData()._id, true);
+  //   } else {
+  //     this._isSingleClick = true;
+  //     let id = this.currentData()._id;
+  //     Meteor.setTimeout(()=>{
+  //       if(this._isSingleClick){
+  //         this._isSingleClick = false;
+  //         this.clickOnMiniCard(evt, id, false);
+  //       }
+  //     }
+  //     ,100);
+  //   }
+  // },
+  // _dblclickOnMinicard(evt){
+  //     // this._isSingleClick = false;
+  //     // this.clickOnMiniCard(evt, this.currentData()._id, true);
+  // },
 
   clickOnMiniCard(evt, id, isDblClick) {
     if (MultiSelection.isActive() || evt.shiftKey) {
@@ -282,8 +282,8 @@ BlazeComponent.extendComponent({
 
   events() {
     return [{
-      'click .js-minicard': this._singleClickOnMinicard,
-      'dblclick .js-minicard': this._dblclickOnMinicard,
+      'click .js-minicard': evt => this.clickOnMiniCard(evt, this.currentData()._id, Features.opinions.editCardTitleByDefault),
+      //'dblclick .js-minicard': this._dblclickOnMinicard,
       'click .js-toggle-multi-selection': this.toggleMultiSelection,
       'click .open-minicard-composer': this.scrollToBottom,
       submit: this.addCard,

@@ -143,25 +143,32 @@ Utils = {
     );
   },
 
-  enableClickOnTouch(selector) {
-    let touchStart = null;
-    let lastTouch = null;
+  subscribedClickOnTouchSelectors : {},
 
-    $(document).on('touchstart', selector, function(e) {
-      touchStart = e.originalEvent.touches[0];
-    });
-    $(document).on('touchmove', selector, function(e) {
-      const touches = e.originalEvent.touches;
-      lastTouch = touches[touches.length - 1];
-    });
-    $(document).on('touchend', selector, function(e) {
-      if (touchStart && lastTouch && Utils.calculateTouchDistance(touchStart, lastTouch) <= 20) {
-        e.preventDefault();
-        const clickEvent = document.createEvent('MouseEvents');
-        clickEvent.initEvent('click', true, true);
-        e.target.dispatchEvent(clickEvent);
-      }
-    });
+  enableClickOnTouch(selector) {
+
+    if (!this.subscribedClickOnTouchSelectors[selector]) {
+      this.subscribedClickOnTouchSelectors[selector] = true;
+
+      let touchStart = null;
+      let lastTouch = null;
+
+      $(document).on('touchstart', selector, function(e) {
+        touchStart = e.originalEvent.touches[0];
+      });
+      $(document).on('touchmove', selector, function(e) {
+        const touches = e.originalEvent.touches;
+        lastTouch = touches[touches.length - 1];
+      });
+      $(document).on('touchend', selector, function(e) {
+        if (touchStart && lastTouch && Utils.calculateTouchDistance(touchStart, lastTouch) <= 20) {
+          e.preventDefault();
+          const clickEvent = document.createEvent('MouseEvents');
+          clickEvent.initEvent('click', true, true);
+          e.target.dispatchEvent(clickEvent);
+        }
+      });
+    }
   },
 
   manageCustomUI(){
