@@ -149,7 +149,7 @@ Utils = {
 
     if (!Utils.subscribedClickOnTouchSelectors[selector]) {
       Utils.subscribedClickOnTouchSelectors[selector] = true;
-      console.log(`enableClickOnTouch: ${selector}`);
+      //console.log(`enableClickOnTouch: ${selector}`);
       let touchStart = null;
       let lastTouch = null;
 
