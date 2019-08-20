@@ -161,7 +161,7 @@ Utils = {
         lastTouch = touches[touches.length - 1];
       });
       $(document).on('touchend', selector, function(e) {
-        console.log(`enableClickOnTouch::touchend: ${selector} ${e}`);
+        //console.log(`enableClickOnTouch::touchend: ${selector} ${e}`);
         if (touchStart && lastTouch && Utils.calculateTouchDistance(touchStart, lastTouch) <= 20) {
           e.preventDefault();
           const clickEvent = document.createEvent('MouseEvents');
