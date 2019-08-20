@@ -147,9 +147,9 @@ Utils = {
 
   enableClickOnTouch(selector) {
 
-    if (!this.subscribedClickOnTouchSelectors[selector]) {
-      this.subscribedClickOnTouchSelectors[selector] = true;
-
+    if (!Utils.subscribedClickOnTouchSelectors[selector]) {
+      Utils.subscribedClickOnTouchSelectors[selector] = true;
+      //console.log(`enableClickOnTouch: ${selector}`);
       let touchStart = null;
       let lastTouch = null;
 
@@ -161,6 +161,7 @@ Utils = {
         lastTouch = touches[touches.length - 1];
       });
       $(document).on('touchend', selector, function(e) {
+        //console.log(`enableClickOnTouch::touchend: ${selector} ${e}`);
         if (touchStart && lastTouch && Utils.calculateTouchDistance(touchStart, lastTouch) <= 20) {
           e.preventDefault();
           const clickEvent = document.createEvent('MouseEvents');
