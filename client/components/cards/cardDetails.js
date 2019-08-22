@@ -46,10 +46,39 @@ BlazeComponent.extendComponent({
 
     const extra = Session.get('currentCardExtra');
     if (extra && extra.id === this.currentData()._id && extra.edit) {
-      Meteor.setTimeout(() => {
         this.$('.js-card-title.js-open-inlined-form').click();
-      }, 100);
     }
+  },
+
+  _setCaretPosition(elem, caretPos) {
+
+    if(elem != null) {
+        if(elem.createTextRange) {
+            var range = elem.createTextRange();
+            range.move('character', caretPos);
+            range.select();
+        }
+        else {
+            if(elem.selectionStart) {
+                elem.focus();
+                elem.setSelectionRange(caretPos, caretPos);
+            }
+            else
+                elem.focus();
+        }
+    }
+  },
+
+  focusTitle() {
+    const e = this.$('.js-edit-card-title');
+    if (e.length) {
+      const el = e[0];
+      //Meteor.setTimeout
+      Tracker.afterFlush(() => {
+        this._setCaretPosition(el, 0);
+      });
+   }
+
   },
 
   isWatching() {
@@ -224,6 +253,7 @@ BlazeComponent.extendComponent({
       }
     });
 
+    this.openTitle();
   },
 
   onDestroyed() {
@@ -240,7 +270,7 @@ BlazeComponent.extendComponent({
       },
       [`${CSSEvents.animationend} .js-card-details`]() {
         this.isLoaded.set(true);
-        this.openTitle();
+        this.focusTitle();
       },
     };
 
