@@ -397,10 +397,12 @@ Template.cardDetailsActionsPopup.events({
   'click .js-move-card-to-top' (evt) {
     evt.preventDefault();
     this.moveToTop();
+    Popup.close();
   },
   'click .js-move-card-to-bottom' (evt) {
     evt.preventDefault();
     this.moveToBottom();
+    Popup.close();
   },
   'click .js-archive' (evt) {
     evt.preventDefault();
