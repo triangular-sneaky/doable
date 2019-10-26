@@ -87,6 +87,7 @@ BlazeComponent.extendComponent({
         const nCards = MultiSelection.isActive() ? MultiSelection.count() : 1;
         const sortIndex = calculateIndex(prevCardDom, nextCardDom, nCards);
         const listId = Blaze.getData(ui.item.parents('.list').get(0))._id;
+        let setLastCard = false;
 
         if (ui.item.listIxOffset ) {
           const lists = Boards.findOne(Session.get('currentBoard')).lists().map(l => l._id);
@@ -94,6 +95,7 @@ BlazeComponent.extendComponent({
           const newIndex = index + ui.item.listIxOffset;
           if (newIndex >= 0 && newIndex < lists.length) {
             listId = lists[newIndex];
+            setLastCard = true;
           }
         }
 
@@ -116,6 +118,11 @@ BlazeComponent.extendComponent({
           const cardDomElement = ui.item.get(0);
           const card = Blaze.getData(cardDomElement);
           card.move(swimlaneId, listId, sortIndex.base);
+          if (setLastCard) {
+            Session.set('currentCardExtra', {
+              id: card._id
+            });
+          }
         }
         boardComponent.setIsDragging(false);
       },
