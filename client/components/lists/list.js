@@ -61,17 +61,20 @@ BlazeComponent.extendComponent({
         EscapeActions.executeUpTo('popup-close');
         boardComponent.setIsDragging(true);
       },
+      over(evt, ui) {
+        ui.helper.removeClass('card-moving-out');
+      },
       out(evt, ui) {
         // console.debug(`sortable:out ${evt} offset=${JSON.stringify(ui.offset)} pos=${JSON.stringify(ui.position)}`)
 
         ui.item.listIxOffset = null;
-        if (Utils.isMiniScreen() && evt.handleObj.type == "mousemove") {
+        if (Utils.isMiniScreen() && (evt.handleObj.type == "touchmove" || evt.handleObj.type == "mousemove")) {
           const listIxOffset = 1;
           if (ui.position.left < 0) {
             listIxOffset = -1;
           }
           ui.item.listIxOffset = listIxOffset;
-
+          ui.helper.addClass('card-moving-out');
         }
       },
       stop(evt, ui) {
