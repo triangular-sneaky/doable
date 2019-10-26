@@ -61,7 +61,25 @@ BlazeComponent.extendComponent({
         EscapeActions.executeUpTo('popup-close');
         boardComponent.setIsDragging(true);
       },
+      over(evt, ui) {
+        ui.helper.removeClass('card-moving-out');
+      },
+      out(evt, ui) {
+        // console.debug(`sortable:out ${evt} offset=${JSON.stringify(ui.offset)} pos=${JSON.stringify(ui.position)}`)
+
+        ui.item.listIxOffset = null;
+        if (Utils.isMiniScreen() && (evt.handleObj.type == "touchmove" || evt.handleObj.type == "mousemove")) {
+          const listIxOffset = 1;
+          if (ui.position.left < 0) {
+            listIxOffset = -1;
+          }
+          ui.item.listIxOffset = listIxOffset;
+          ui.helper.addClass('card-moving-out');
+        }
+      },
       stop(evt, ui) {
+        // console.debug(`sortable:stop ${evt} offset=${JSON.stringify(ui.offset)} pos=${JSON.stringify(ui.position)} listIx=${ui.item.listIxOffset }`);
+
         // To attribute the new index number, we need to get the DOM element
         // of the previous and the following card -- if any.
         const prevCardDom = ui.item.prev('.js-minicard').get(0);
@@ -69,6 +87,16 @@ BlazeComponent.extendComponent({
         const nCards = MultiSelection.isActive() ? MultiSelection.count() : 1;
         const sortIndex = calculateIndex(prevCardDom, nextCardDom, nCards);
         const listId = Blaze.getData(ui.item.parents('.list').get(0))._id;
+
+        if (ui.item.listIxOffset ) {
+          const lists = Boards.findOne(Session.get('currentBoard')).lists().map(l => l._id);
+          const index = lists.indexOf(listId);
+          const newIndex = index + ui.item.listIxOffset;
+          if (newIndex >= 0 && newIndex < lists.length) {
+            listId = lists[newIndex];
+          }
+        }
+
         const swimlaneId = Blaze.getData(ui.item.parents('.swimlane').get(0))._id;
 
         // Normally the jquery-ui sortable library moves the dragged DOM element
