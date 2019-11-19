@@ -60,6 +60,10 @@ BlazeComponent.extendComponent({
       'click .js-unselect-list'() {
         Session.set('currentList', null);
       },
+      'click .js-select-list'() {
+        Session.set('currentList', this.currentData()._id);
+        Session.set('currentCard', null);
+      },
       submit: this.editTitle,
     }];
   },
