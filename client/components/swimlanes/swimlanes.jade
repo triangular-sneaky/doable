@@ -3,13 +3,21 @@ template(name="swimlane")
     +swimlaneHeader
   .swimlane.js-lists.js-swimlane
     if isMiniScreen
-      if currentListIsInThisSwimlane _id
-        +list(currentList)
+
+      //- if isFiltering
+
+      //- if currentListIsInThisSwimlane _id
+
+      each lists
+        +list(list)
+
       unless currentList
         each lists
           +miniList(this)
         if currentUser.isBoardMember
           +addListForm
+
+
     else
       each lists
         +list(this)
@@ -19,16 +27,28 @@ template(name="swimlane")
         +addListForm
 
 template(name="listsGroup")
-  .swimlane.list-group.js-lists
-    if isMiniScreen
-      if currentList
+  if isMiniScreen
+    if (currentList)
+      .swimlane.list-group.js-lists()
         +list(currentList)
-      else
+    else if $eq 'normal' squashMode.get
+      .swimlane.list-group.js-lists()
         each lists
           +miniList(this)
         if currentUser.isBoardMember
           +addListForm
+
     else
+      .swimlane.list-group.js-lists.squash()
+        if $eq 'todo' squashMode.get
+          each todoListsOnly lists
+            +list(this)
+        if $eq 'all' squashMode.get
+          each lists
+            +list(this)
+
+  else
+    .swimlane.list-group.js-lists()
       each lists
         +list(this)
         if currentCardIsInThisList _id null

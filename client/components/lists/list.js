@@ -18,6 +18,9 @@ BlazeComponent.extendComponent({
   // callback, we basically solve all issues related to reactive updates. A
   // comment below provides further details.
   onRendered() {
+
+    //QuickFilterController.reapplyFilter();
+
     const boardComponent = Utils.getBoardBodyComponent(this);
 
     function userIsMember() {

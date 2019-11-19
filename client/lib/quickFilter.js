@@ -1,5 +1,5 @@
 import { Subject, timer } from "rxjs";
-import { debounce } from "rxjs/operators";
+import { debounce, distinctUntilChanged, map } from "rxjs/operators";
 
 QuickFilter = {
   init() {
@@ -82,16 +82,28 @@ QuickFilter = {
     this.commands["№"] = this.commands["#"];
     this.commands[" /"] = this.commands["/"];
 
+    this.filterApply$
+      .pipe(map(c => c || ""))
+      .pipe(distinctUntilChanged())
+      .subscribe(c => this.doFilterCards(c));
+
     this.filterExpression$
       .pipe(debounce(_ => timer(150)))
-      .subscribe(c => this.doFilterCards(c));
+      .subscribe(this.filterApply$);
+
+
   },
   commandParser: /^(-?)([#№:@*!]|\/\/|(?:\s*\/))?(.*)$/i,
 
   filterExpression$: new Subject(),
+  filterApply$: new Subject(),
 
   filterCards(c) {
-    this.filterExpression$.next(c);
+    this.filterExpression$.next(c || "");
+  },
+
+  filterCardsImmediately(c) {
+    this.filterApply$.next(c);
   },
 
   doFilterCards(c) {
@@ -132,10 +144,70 @@ QuickFilter = {
           else $(e).hide();
         });
       }
+
+
+      let quickfilterDesc = null;
+      if (parsed && c.trim())  {
+        quickfilterDesc = {query: c};
+      }
+      Session.set("QuickFilter", quickfilterDesc);
     } catch (e) {
       console.log(e);
     }
   }
 };
 
+
+QuickFilterController = {
+
+
+  setFilter(c) {
+    this.lastFilter = c;
+    QuickFilter.filterCards(c)
+  },
+
+  showFilter: new ReactiveVar(false),
+  displayMode: new ReactiveVar('normal'),
+
+  setDisplayMode(mode) {
+    this.displayMode.set( mode);
+    //this.reapplyFilter();
+  },
+
+  reapplyFilter() {
+    var lf = this.lastFilter;
+    Tracker.afterFlush(()=>QuickFilter.filterCardsImmediately(lf ));
+
+  },
+
+  getDisplayMode() {
+    return this.displayMode;
+  },
+
+  toggleShow(){
+    this.showFilter.set(! this.showFilter.get());
+    if (!this.showFilter.get()) {
+      this.setFilter("");
+    }
+  },
+
+  init() {
+    const _this = this;
+    Tracker.autorun(() => {
+      const list = Session.get('currentList');
+      const mode = this.displayMode;
+      if (list || mode != 'single') {
+        Tracker.afterFlush(() =>
+          _this.reapplyFilter());
+      }
+
+
+
+    });
+    // $(document).on('click', '.list-body', e => this.reapplyFilter())
+  }
+
+};
+
 QuickFilter.init();
+QuickFilterController.init();

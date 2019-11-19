@@ -2,7 +2,13 @@ Meteor.subscribe('user-admin');
 Meteor.subscribe('boards');
 Meteor.subscribe('setting');
 
+
 Template.header.helpers({
+
+  showFilter() {
+    return QuickFilterController.showFilter;
+  },
+
   wrappedHeader() {
     return !Session.get('currentBoard');
   },
@@ -33,6 +39,7 @@ Template.header.helpers({
     const announcements =  Announcements.findOne();
     return announcements && announcements.body;
   },
+
 });
 
 Template.header.events({
@@ -49,11 +56,45 @@ Template.header.events({
   },
 
   'input #zz-quick-filter'(e) {
-    QuickFilter.filterCards(e.target.value);
+    QuickFilterController.setFilter(e.target.value);
   },
 
   'keydown #zz-quick-filter'(e) {
     if (e.key == "Escape") e.target.blur();
+  },
+
+  'click .js-toggle-squash-mode': Popup.open('minisreenListsDisplayMode'),
+
+  'click .js-open-quick-search'() {
+    QuickFilterController.toggleShow();
+    const c = this;
+    if (QuickFilterController.showFilter.get()) {
+      //Tracker.afterFlush(() => c.find('#zz-quick-filter').focus());
+    }
   }
 
+
 });
+
+BlazeComponent.extendComponent({
+  displayMode() {
+    return QuickFilterController.getDisplayMode();
+  },
+
+  toggled() {
+    return Session.get("currentList") == null &&
+      this.currentData() == displayMode().get();
+  },
+
+
+  events() {
+    return [{
+       'click .js-select-displaymode'() {
+        const level = this.currentData();
+        QuickFilterController.setDisplayMode(level);
+        Session.set("currentList", null);
+        Popup.close();
+      },
+    }];
+  },
+}).register('minisreenListsDisplayModePopup');
