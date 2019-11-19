@@ -187,7 +187,7 @@ QuickFilterController = {
   toggleShow(){
     this.showFilter.set(! this.showFilter.get());
     if (!this.showFilter.get()) {
-      setFilter("");
+      this.setFilter("");
     }
   },
 
