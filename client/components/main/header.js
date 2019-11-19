@@ -69,7 +69,7 @@ Template.header.events({
     QuickFilterController.toggleShow();
     const c = this;
     if (QuickFilterController.showFilter.get()) {
-      Tracker.afterFlush(() => c.find('#zz-quick-filter').focus());
+      //Tracker.afterFlush(() => c.find('#zz-quick-filter').focus());
     }
   }
 
