@@ -210,6 +210,12 @@ BlazeComponent.extendComponent({
   currentCardIsInThisList(listId, swimlaneId) {
     return currentCardIsInThisList(listId, swimlaneId);
   },
+
+  onCreated() {
+    const qfController = QuickFilterController;
+    this.squashMode = qfController.getDisplayMode();
+  },
+
   onRendered() {
     const boardComponent = this.parentComponent();
     const $listsDom = this.$('.js-lists');
@@ -225,6 +231,7 @@ BlazeComponent.extendComponent({
     if (!Utils.isMiniScreen()) {
       this.driveListLayout();
     }
+
   },
 
   onDestroyed() {
@@ -248,5 +255,13 @@ BlazeComponent.extendComponent({
       }
     });
     this._resizeObserver.observe(this.firstNode());
+  },
+
+  // squashMode() {
+  //   return 'todo';
+  // },
+
+  todoListsOnly(lists) {
+    return lists.map(x => x).filter(x => x.getSpecialListTag() != "special-list-done").reverse();
   },
 }).register('listsGroup');
