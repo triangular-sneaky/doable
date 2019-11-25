@@ -71,7 +71,11 @@ Template.header.events({
     if (QuickFilterController.showFilter.get()) {
       //Tracker.afterFlush(() => c.find('#zz-quick-filter').focus());
     }
-  }
+  },
+
+  'click .js-toggle-board-header'() {
+    Utils.toggleBoardHeader();
+  },
 
 
 });
