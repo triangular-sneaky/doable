@@ -267,6 +267,11 @@ Utils = {
     }
     return finalString;
   },
+
+  toggleBoardHeader() {
+    const fullScreenSelector = "#header-main-bar";
+    $(fullScreenSelector).toggle("fast");
+  }
 };
 
 // A simple tracker dependency that we invalidate every time the window is

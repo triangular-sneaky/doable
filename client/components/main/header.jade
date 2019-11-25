@@ -38,8 +38,9 @@ template(name="header")
       a#header-new-board-icon.js-create-board
         i.fa.fa-plus(title="Create a new board")
 
-      a.board-header-btn.js-toggle-squash-mode
-        i.fa.fa-asterisk
+      if isMiniScreen
+        a.board-header-btn.js-toggle-squash-mode
+          i.fa.fa-asterisk
 
       if currentBoard
         unless isMiniScreen
@@ -53,9 +54,11 @@ template(name="header")
           i.fa.fa-search
 
       unless isMiniScreen
-        a.board-header-btn.js-open-search-view(title="{{_ 'search'}}")
-          i.fa.fa-search
+        a.board-header-btn.js-toggle-board-header(title="Toggle header")
+          i.fa.fa-bars
 
+      //-   a.board-header-btn.js-open-search-view(title="{{_ 'search'}}")
+           i.fa.fa-search
 
 
       unless isMiniScreen
@@ -67,7 +70,7 @@ template(name="header")
       current page. This bar is contextual based.
       If the user is not connected we display "sign in" and "log in" buttons.
     unless compactScreen
-      #header-main-bar(class="{{#if wrappedHeader}}wrapper{{/if}}")
+      #header-main-bar(class="{{#if wrappedHeader}}wrapper{{/if}}" style='display:none')
         +Template.dynamic(template=headerBar)
 
         unless hideLogo

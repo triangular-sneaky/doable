@@ -1,7 +1,14 @@
 import { Subject, timer } from 'rxjs';
 import { debounce } from 'rxjs/operators';
+import ResizeObserver from 'resize-observer-polyfill';
+
+// import { ResizeObserver as Polyfill } from 'resize-observer-polyfill';
+// const ResizeObserver = window.ResizeObserver || Polyfill;
+// const ResizeObserver = Polyfill;
 
 const { calculateIndex, enableClickOnTouch } = Utils;
+
+
 
 function currentListIsInThisSwimlane(swimlaneId) {
   const currentList = Lists.findOne(Session.get('currentList'));

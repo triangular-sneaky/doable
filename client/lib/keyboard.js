@@ -21,11 +21,37 @@ Mousetrap.bind('q', () => {
   }
 });
 
+
 Mousetrap.bind('x', () => {
   if (Filter.isActive()) {
     Filter.reset();
   }
 });
+
+/*
+  shortcut.add("/", find, { disable_in_input: true, keycode: 191 });
+  ["Ctrl+E", "Ctrl+У"].forEach(s => shortcut.add(s, find));
+
+  delayUntilSelector(fullScreenSelector, e => e.hide());
+  shortcut.add("Z", () => $(fullScreenSelector).toggle("fast"), {
+    disable_in_input: true
+  });*/
+
+Mousetrap.bind('z', e => {
+  Utils.toggleBoardHeader();
+  e.preventDefault();
+});
+
+const find = () =>
+    $("#zz-quick-filter")
+      .focus()
+      .select();
+
+Mousetrap.bind('/', e => {
+  find();
+  e.preventDefault();
+});
+
 
 Mousetrap.bind('f', () => {
   if (Sidebar.isOpen() && Sidebar.getView() === 'filter') {
