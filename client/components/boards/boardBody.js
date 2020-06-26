@@ -23,10 +23,6 @@ BlazeComponent.extendComponent({
     });
   },
 
-  onlyShowCurrentCard() {
-    return Utils.isMiniScreen() && Session.get('currentCard');
-  },
-
 }).register('board');
 
 BlazeComponent.extendComponent({

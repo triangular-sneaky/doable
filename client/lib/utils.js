@@ -19,6 +19,18 @@ Utils = {
     });
   },
 
+  setupCardInSession(boardId, cardId, edit) {
+    if (boardId)
+      Session.set('currentBoard', boardId);
+    Session.set('currentCard', cardId);
+
+    Session.set('currentCardExtra', {
+      id: cardId,
+      edit: edit
+    });
+
+  },
+
   capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   },

@@ -157,6 +157,14 @@ BlazeComponent.extendComponent({
   },
 
   onRendered() {
+
+    EscapeActions.register('inlinedForm',
+    () => {  },
+    () => { return false; }, {
+      enabledOnClick: false,
+    });
+
+
     if (!Utils.isMiniScreen()) {
       Tracker.afterFlush(() => {
         //$('.card-details').mCustomScrollbar({theme:'minimal-dark', setWidth: false, setLeft: 0, scrollbarPosition: 'outside', mouseWheel: true });
@@ -327,6 +335,7 @@ BlazeComponent.extendComponent({
         const listId = this.data().listId;
         Session.set('currentCard', null);
         Session.set('currentList', listId);
+        Popup.close();
       },
       'click .js-move-card': Popup.open('moveCard'),
     }];

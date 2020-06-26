@@ -1,9 +1,6 @@
 template(name="board")
   if isBoardReady.get
     if currentBoard
-      if onlyShowCurrentCard
-        +cardDetails(currentCard)
-      else
         +boardBody
     else
       //- XXX We need a better error message in case the board has been archived

@@ -187,15 +187,21 @@ BlazeComponent.extendComponent({
       // If the card is already selected, we want to de-select it.
       // XXX We should probably modify the minicard href attribute instead of
       // overwriting the event in case the card is already selected.
-    } else if (Session.equals('currentCard', id)) {
-      evt.stopImmediatePropagation();
-      evt.preventDefault();
-      Utils.goBoardId(Session.get('currentBoard'));
     } else {
       evt.stopImmediatePropagation();
       evt.preventDefault();
-      Utils.goCardId(id, isDblClick);
+      if (Utils.isMiniScreen()) {
+        Utils.setupCardInSession(null, id, false);
+        Popup.open('cardDetails')(evt, { title: false });
+      } else {
+        if (Session.equals('currentCard', id)) {
+          Utils.goBoardId(Session.get('currentBoard'));
+        } else {
 
+          Utils.goCardId(id, isDblClick);
+        }
+
+      }
     }
   },
 

@@ -24,7 +24,7 @@ window.Popup = new class {
   ///     'click .elementClass': Popup.open("popupName"),
   ///   });
   /// The popup inherit the data context of its parent.
-  open(name) {
+  open(name, extensions, isFullScreen) {
     const self = this;
     const popupName = `${name}Popup`;
     function clickFromPopup(evt) {
@@ -58,13 +58,18 @@ window.Popup = new class {
       $(openerElement).addClass('is-active');
       evt.preventDefault();
 
+      const titleGetter = self._getTitle(popupName);
+      if (extensions) {
+        titleGetter = () => extensions.title;
+      }
+
       // We push our popup data to the stack. The top of the stack is always
       // used as the data source for our current popup.
       self._stack.push({
         popupName,
         openerElement,
         hasPopupParent: clickFromPopup(evt),
-        title: self._getTitle(popupName),
+        title: titleGetter,
         depth: self._stack.length,
         offset: self._getOffset(openerElement),
         dataContext: this.currentData && this.currentData() || this,
@@ -198,7 +203,7 @@ escapeActions.forEach((actionName) => {
     () => Popup[actionName](),
     () => Popup.isOpen(),
     {
-      noClickEscapeOn: '.js-pop-over,.js-open-card-title-popup',
+      noClickEscapeOn: '.js-pop-over,.js-open-card-title-popup,.card-details',
       enabledOnClick: actionName === 'close',
     }
   );
