@@ -52,7 +52,7 @@ QuickFilter = {
       ],
       "!": [
         {
-          regex: _ => normalRegex(" /|:o:|:fire:|:bulb:"),
+          regex: _ => normalRegex(" /|:o:|:fire:|:bulb:|⭕|🔥|💡"),
           target: searcherInAttributes("img", e => e.title)
         },
         {
