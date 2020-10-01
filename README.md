@@ -1,4 +1,4 @@
-# Opinionated fork of Wekan
+# Doable: Opinionated fork of Wekan
 
 Upstream repo: [wekan/wekan](https://github.com/wekan/wekan)
 
