@@ -1,10 +1,10 @@
 {
-  "name": "Wekan",
+  "name": "Doable",
   "description": "The open-source kanban",
-  "repository": "https://github.com/wekan/wekan",
+  "repository": "https://github.com/dpoznyak/doable",
   "logo": "https://raw.githubusercontent.com/wekan/wekan/master/meta/icons/wekan-150.png",
   "keywords": ["productivity", "tool", "team", "kanban"],
-  "website": "https://wekan.github.io",
+  "website": null,
   "env": {
     "BUILDPACK_URL": "https://github.com/AdmitHub/meteor-buildpack-horse.git",
     "ROOT_URL": {
