@@ -73,7 +73,11 @@ do
 	                echo "Linux";
 			# Debian, Ubuntu, Mint
 			sudo apt-get install -y build-essential git curl wget
-			curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+			# npm nodejs
+			curl -0 -L https://npmjs.org/install.sh | sudo sh
+			sudo chown -R $(id -u):$(id -g) $HOME/.npm
+			sudo npm -g install n
+			sudo n 12.18.3
 		elif [[ "$OSTYPE" == "darwin"* ]]; then
 		        echo "macOS";
 			pause '1) Install XCode 2) Install Node 8.x from https://nodejs.org/en/ 3) Press [Enter] key to continue.'
