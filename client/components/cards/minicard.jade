@@ -3,7 +3,8 @@ template(name="minicard")
     class="{{#if isLinkedCard}}linked-card{{/if}}"
     class="{{#if isLinkedBoard}}linked-board{{/if}}"
     class="minicard-{{colorClass}}"
-    class="{{#if isSpecialCard}}special-card filter-exempt{{/if}}")
+    class="{{#if isSpecialCard}}special-card filter-exempt{{/if}}"
+    data-sort="{{sort}}")
     if cover
       .minicard-cover(style="background-image: url('{{cover.url}}');")
     if labels
