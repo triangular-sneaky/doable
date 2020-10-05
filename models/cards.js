@@ -1089,13 +1089,13 @@ Cards.mutations({
   },
 
   moveToTop() {
-    const minOrder = _.min(this.list().cards(this.swimlaneId).map((c) => c.sort));
+    const minOrder = _.min(this.list().cards().map((c) => c.sort));
     this.move(this.swimlaneId, this.listId, minOrder - 1);
 
   },
 
   moveToBottom() {
-    const maxOrder = _.max(this.list().cards(this.swimlaneId).map((c) => c.sort));
+    const maxOrder = _.max(this.list().cards().map((c) => c.sort));
     this.move(this.swimlaneId, this.listId, maxOrder + 1);
   },
 

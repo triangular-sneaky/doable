@@ -126,12 +126,12 @@ BlazeComponent.extendComponent({
           const movingToDifferentList = listId != card.listId;
           const cancel = false;
           if (list && movingToDifferentList ) {
-            const moveTo = prompt("Move to " + list.title + " to (🤦‍♂️ empty string for bottom):", "top");
+            const moveTo = prompt("Move to " + list.title + " at top? (🤦‍♂️ non-empty string = bottom)", "");
             if (moveTo!== null) {
-              if (moveTo != "") { // top
-                sortIndex.base = _.min(list.cards(card.swimlaneId).map((c) => c.sort)) - 1;
+              if (moveTo == "") { // top
+                sortIndex.base = _.min(list.cards().map((c) => c.sort)) - 1;
               } else { // bottom
-                sortIndex.base = _.max(list.cards(card.swimlaneId).map((c) => c.sort)) + 1;
+                sortIndex.base = _.max(list.cards().map((c) => c.sort)) + 1;
               }
             } else {
               cancel = true;
