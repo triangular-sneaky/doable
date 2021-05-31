@@ -621,6 +621,14 @@ Cards.helpers({
     var classes = [];
     if (decoration.dimmed) classes.push("card-dimmed");
     if (decoration.hidden) classes.push("card-hidden");
+
+    const title = this.title;
+    if (/(🔥🔥)|:fire::fire:/.test(title)) {
+      classes.push("card-due");
+    } else if (/🔥|:fire:/.test(title)) {
+      classes.push("card-almost-due");
+    }
+
     return classes;
   },
 

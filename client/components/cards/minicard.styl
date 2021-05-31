@@ -46,6 +46,7 @@
       font-size:20px;
       color: #ccc;
 
+
 .minicard
   padding: 6px 8px 2px
   position: relative
@@ -305,3 +306,15 @@ minicard-color(background, color...)
 
 .minicard-indigo
   minicard-color(#4b0082, #ffffff) //White text for better visibility
+
+
+.minicard-wrapper:has(.almost-due) .minicard,
+.minicard-wrapper.card-almost-due .minicard {
+  border-left:4px solid #f4ce42
+}
+
+.minicard-wrapper:has(.due) .minicard,
+.minicard-wrapper.card-due .minicard {
+  border-left:4px solid #ea190e
+
+}
