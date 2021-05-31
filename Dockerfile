@@ -89,7 +89,7 @@ ARG NO_CLEANUP
 # ENV BUILD_DEPS="paxctl"
 ENV BUILD_DEPS="apt-utils bsdtar gnupg gosu wget curl bzip2 build-essential python python3 python3-distutils git ca-certificates gcc-7 procps locales" \
     DEBUG=false \
-    NODE_VERSION=v8.15.1 \
+    NODE_VERSION=v16.2.0 \
     METEOR_RELEASE=1.6.0.1 \
     USE_EDGE=false \
     METEOR_EDGE=1.5-beta.17 \
